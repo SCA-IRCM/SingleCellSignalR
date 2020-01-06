@@ -1,0 +1,1042 @@
+---
+title: "SingleCellSignalR"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{my-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# User's Guide
+
+### Simon Cabello-Aguilar<sup>1</sup>, Jacques Colinge<sup>1</sup>
+
+<sup>1</sup> Institut de Recherche en Cancérologie de Montpellier, Inserm, Montpellier, France ; Institut régional du Cancer Montpellier, Montpellier, France ; Université de Montpellier, Montpellier, France  
+
+## Contents
+
+### 1. Introduction  
+### 2. Quick Start  
+### 3. Detailed overview 
+1. Details of each function  
+2. Examples of use
+
+----
+
+
+# Introduction
+
+This guide provides an overview of the SingleCellSignalR package, a comprehensive framework to obtain cellular network maps from scRNA-seq data. SingleCellSignalR comes with a complete pipeline integrating existing methods to cluster individual cell transcriptomes and identify cell subpopulations as well as novel cellular network-specific algorithms. More advanced users can substitute their own logic or alternative tools at various stages of data processing. SingleCellSignalR also maps cell subpopulation internal network linked to genes of iinterest through the integration of regulated KEGG and Reactome pathways together with ligands and receptors involved in inferred cell-cell interactions. The cellular networks can be exported in text files and graphML objects to be further explored with Cytoscape (www.cytoscape.org), yEd (www.yworks.com), or similar software tools.  
+  
+  
+-----
+
+
+# Quick Start
+
+Independent of the chosen scRNA-seq platform, deep or shallower, data comes as a table of read or unique molecule identifier (UMI) counts, one column per individual cell and one row per gene. Initial processing is required to prepare such data for subsequent analysis and we decided to propose a generic solution for the sake of convenience, though users can easily substitute their own computations. Gene names (HUGO symbols) are provided in the first column of the table. 
+  
+Each analysis is organized around a working directory (or project folder):  
+
+![][id0]
+
+[id0]: /Users/simon.cabello/Desktop/article/example/directory.png
+  
+The file containing the read counts should be placed in the working directory.  
+```r
+> file <- "example_data.txt"
+```
+Data processing can then start:    
+```r
+> data <- data_prepare(file = file)
+log-Normalization
+14223 genes
+400 cells
+Zero rate = 89.6%
+```
+```{r, echo=FALSE, eval=TRUE, results='hide'}
+data(example_dataset, package = "SingleCellSignalR")
+data = example_dataset
+genes = data$genes
+rownames(data) = genes
+data = data[,-1]
+```
+
+The **data_prepare()** function eliminates non expressed genes before performing read count normalization.    
+
+Normalized data are submitted to a clustering algorithm to identify cell subpopulations:  
+```{r, eval=TRUE}
+clust <- clustering(data = data,n.cluster = 4, n = 10, method = "simlr",write = FALSE)
+```
+
+We set the method argument to `simlr`, which caused the **SIMLR()** function of the SIMLR package [1] to be used. The **SIMLR_Estimate_Number_of_Clusters()** function determined the number of clusters, between 2 and n (n=10 above).  
+
+Next, differentially expressed genes in one cluster compared to the others are identified using the **cluster_analysis()** function, which relies on **edgeR**. A result table is automatically created in the *cluster-analysis* folder:  
+
+```{r, eval=TRUE, results='hide'}
+clust.ana <- cluster_analysis(data = data, genes = rownames(data), cluster = clust$cluster, write = FALSE)
+```
+Once the preliminary steps illustrated above are completed, **SingleCellSignalR** can be used to generate cellular interaction lists using the **cell_signaling()** function:  
+```{r, eval=TRUE}
+signal <- cell_signaling(data = data, genes = rownames(data), cluster = clust$cluster, write = FALSE)
+```
+
+An intercellular network can also be generated to map the overall ligand/receptor interactions invoking the **inter_network()** function:  
+```{r, eval=TRUE}
+inter.net <- inter_network(data = data, signal = signal, genes = genes, cluster = clust$cluster, write = FALSE)
+```
+
+At this point the intercellular network have been generated and exported in text and graphML formats in the *networks* folder.   
+A summary of the interactions between cell clusters can be output in the form of a chord diagram by the  **visualize()** function:  
+```{r, eval=TRUE}
+visualize(inter = signal)
+```
+
+This function will create a *plot* in the R plot window.  
+
+The details of the interactions between two clusters, for example cluster 1 and 2, can also be shown in the plot window with the **visualize()** function. Note that in the example below we ask for the display of two pairs of cell clusters, pair 1 that contains interactions from cluster 1 to 2, and pair 4 from cluster 2 to 1. (`names(signal)` returns the cell cluster names in each pair, see function **visualize()** details.)   
+```{r, eval=TRUE}
+visualize(inter = signal,show.in=c(1,4))
+```   
+
+And these plots can be saved into pdf files in the *images* folder using the `write.in` argument of the **visualize()** function.  
+```r
+> visualize(inter = signal,write.in=c(1,4))
+```
+
+<span style="color:white">red</span>   
+<span style="color:white">red</span>   
+<span style="color:white">red</span> 
+
+------
+
+
+# Detailed overview
+
+**SingleCellSignalR** package functions have many arguments parameters that can be changed by the user to fit her needs. Furthermore, several handy functions that were not illustrated above are provided to generate additional plots or reports.  
+
+<span style="color:white">red</span>   
+<span style="color:white">red</span>   
+<span style="color:white">red</span>   
+   
+# Function descriptions  
+
+### *Table of contents*
+
++ **cell_classifier()**  
++ **cell_signaling()**  
++ **cluster_analysis()**  
++ **clustering()**  
++ **data_prepare()**  
++ **expression.plot()**  
++ **expression.plot.2()**  
++ **inter_network()**  
++ **intra_network()**  
++ **markers()**  
++ **visualize()**  
+
+
+
+---
+
+## **cell_classifier()**
+
+
+
+### Description
+
+
+ Classifies cells using cell type specific markers.
+
+
+### Usage
+
+```r
+cell_classifier(data, genes, markers = markers.default, tsne = NULL, plot.details = FALSE, write = TRUE, verbose = TRUE)
+```
+
+
+### Arguments
+
+Argument      |Description
+------------- |----------------
+`data`     |     a data frame of n rows (genes) and m columns (cells) of read or UMI counts (note : rownames(data)=genes)
+`genes`     |     a character vector of HUGO official gene symbols of length n
+`markers`     |     a data frame of cell type signature genes
+`tsne`     |     (optional) a table of n rows and 2 columns with t-SNE projection coordinates for each cell
+`plot.details`     |     a logical (if TRUE, then plots the number of cells attributed to one cell type, see below)
+`write`     |     a logical
+`verbose`     |     a logical
+
+### Details
+
+   
+The ` markers` argument must be a table with cell type gene signatures, one cell type in each column. The column names are the names of the cell types. **SingleCellSignalR** package *markers.default* table provides an example of this format.  
+
+If ` tsne` is not provided, then the function will just not display the cells on the t-SNE. Although t-SNE maps are widely used to display cells on a 2D projection, the user can provide any table with two columns and a number of rows equal to the number of columns of `data` (e.g. the two first components of a PCA).   
+   
+If ` plot.details` is TRUE, then the function plots the number of cells attributed to a single cell type as a function of the threshold applied to the normalized gene signature average.   
+
+If ` write` is TRUE, then the function writes four different text files. (1) The "raw classification matrix" provides the normalized average gene signature for each cell type in each individual cell, a number between 0 and 1. This matrix has one row per cell type and one column per cell, and the sum per column is 1. Row names are the cell type names (column names of the markers table) and the column names are the individual cell identifiers (column names of `data`). (2) The "thresholded classification matrix", which is obtained by eliminating all the values of the "raw classification matrix" that are below a threshold a\*. In practice, a\* is automatically determined by the function to maximize the number of cells that are assigned to a single cell type and all the cells (columns) assigned to 0 or >1 cell types are discarded. The number of cells assigned to a single type depending on a\* can be plotted by using the parameter `plot.details=TRUE`. (3) A cluster vector assigning each cell to a cell type. Note that a supplementary, virtual cluster is created to collect all the cells assigned to 0 or >1 types. This virtual cluster is named "undefined". (4) A table associating each cell type to a cluster number in the cluster vector.  
+
+### Value
+
+
+ The function returns a list containing the thresholded table, the maximum table, the raw table, a cluster vector and the cluster names. The maximum table is a special thresholded table where in every column only the maximum gene signature is kept. It can be used to force the classification of every cell. 
+
+
+### Example
+
+```{r, eval=TRUE, results='hide'} 
+ data <- matrix(runif(1000,0,1),nrow=50,ncol=20)
+ rownames(data) <- paste("gene",1:50)
+ markers <- matrix(paste("gene",1:10),ncol=5,nrow=2)
+ colnames(markers) <- paste("type",1:5)
+ cell_classifier(data,rownames(data),markers)
+```
+
+---
+
+
+## **cell_signaling()**  
+
+### Description
+
+
+ Computes "autocrine" or "paracrine" interactions between cell clusters.
+
+
+### Usage
+
+```r
+cell_signaling(data, genes, cluster, int.type = c("paracrine",  "autocrine"), c.names = NULL, s.score = 0.5, logFC = NULL,  species = c("homo sapiens", "mus musculus"), tol = 0, write = TRUE, verbose = TRUE)
+```
+
+
+### Arguments
+
+Argument      |Description
+------------- |----------------
+`data`     |     a data frame of n rows (genes) and m columns (cells) of read or UMI counts (note : rownames(data)=genes)
+`genes`     |     a character vector of HUGO official gene symbols of length n
+`cluster`     |     a numeric vector of length m
+`int.type`     |     "autocrine" or "paracrine"
+`c.names`     |     (optional) cluster names
+`s.score`     |     a number between 0 and 1, the LRscore threshold
+`logFC`     |     a number, the log fold-change threshold for differentially expressed genes
+`species`     |     "homo sapiens" or "mus musculus"
+`tol`     |     a tolerance parameter for balancing between "autocrine" and "paracrine" interactions
+`write`     |     a logical
+`verbose`     |     a logical
+
+
+### Details
+
+  
+`int.type` must be equal to "paracrine" or "autocrine" exclusively. The "paracrine" option looks for ligands expressed in cluster A and their associated receptors according to LR*db* that are expressed in any other cluster but A. These interactions are labelled "paracrine". The interactions that involve a ligand and a receptor, both differentially expressed in their respective cell clusters according to the **edgeR** analysis performed by the **cluster_analysis()** function, are labelled "specific".  
+
+The "autocrine" option searches for ligands expressed in cell cluster A and their associated receptors also expressed in A. These interactions are labelled "autocrine". Additionally, it searches for those associated receptors in the other cell clusters (not A) to cover the part of the signaling that is "autocrine" and "paracrine" simultaneously. These interactions are labelled "autocrine/paracrine".  
+
+The `tol` argument allows the user to tolerate a fraction of the cells in cluster A to express the receptors in case `int.type="paracrine"`, that is to call paracrine interactions that are dominantly paracrine though not exclusively. Conversely, it allows the user to reject interactions involving receptors that would be expressed by a small fraction of cluster A cells in case `int.type="autocrine"`. By construction the association of these two options covers all the possible interactions and increasing the `tol` argument allows the user to move interactions from "autocrine" to "paracrine".   
+
+If the user does not set `c.names`, the clusters will be named from 1 to the maximum number of clusters (cluster 1, cluster 2, ...). The user can exploit the `c.names` vector in the list returned by the **cell_classifier()** function for this purpose. The user can also provide her own cluster names.   
+
+`s.score`  is the threshold on the LRscore. The value must lie in the [0;1] interval, default is 0.4 to ensure confident ligand-receptor pair identifications (see our publication). Lower values increase the number of putative interactions while increasing the false positives. Higher values do the opposite.   
+
+`logFC` is a threshold applied to the log fold-change (logFC) computed for each gene during the differential gene expression analysis. Its default value is log~2~(1.5) It further selects the differentially expressed genes (>logFC) after the p-value threshold imposed in the function **cluster_analysis()** below.     
+
+`species` must be equal to "homo sapiens" or "mus musculus", default is "homo sapiens". In the case of mouse data, the function converts mouse genes in human orthologs (according to Ensembl) such that LR*db* can be exploited, and finally output genes are converted back to mouse.   
+
+If `write` is TRUE, then the function writes a text file that reports the interactions in the *cell-signaling* folder. This file is a 4-column table: ligands, receptors, interaction types ("paracrine", "autocrine", "autocrine/paracrine" and "specific"), and the associated LRscore.  
+
+Remarks: this function can be used with any `data` table associated with corresponding `genes` and `cluster` vectors, meaning that advanced users can perform their own data normalization and cell clustering upfront. In case, the function **cluster_analysis()** was not executed, this function would work but "specific" interactions would not be annotated as such.    
+
+
+### Value
+
+
+The function returns "autocrine" or "paracrine" interaction lists.
+
+
+### Example
+
+```{r, eval=TRUE, results='hide'} 
+ data=matrix(runif(1000,0,1),nrow=5,ncol=200)
+ rownames(data) = c("A2M","LRP1","AANAT","MTNR1A","ACE")
+ cluster=c(rep(1,100),rep(2,100))
+ cell_signaling(data,rownames(data),cluster,int.type="paracrine",write=FALSE)
+``` 
+ 
+---
+
+## **cluster_analysis()**
+
+### Description
+
+
+ Analysis of the differentially expressed genes in the clusters and their composition by a marker based approach.
+
+
+### Usage
+
+```r
+cluster_analysis(data, genes, cluster, c.names = NULL, dif.exp = TRUE, s.pval = 10^-2, markers = NULL, write = TRUE, verbose = TRUE)
+```
+
+
+### Arguments
+
+Argument      |Description
+------------- |----------------
+`data`     |     a data frame of n rows (genes) and m columns (cells) of read or UMI counts (note : rownames(data)=genes)
+`genes`     |     a character vector of HUGO official gene symbols of length n
+`cluster`     |     a numeric vector of length m
+`c.names`     |     a vector of cluster names
+`dif.exp`     |     a logical (if TRUE, then computes the differential gene expression between the clusters using **edgeR**)
+`s.pval`     |     a value, a fixed p-value threshold
+`markers`     |     a table of cell type signature genes
+`write`     |     a logical
+`verbose`     |     a logical
+
+### Details  
+
+ 
+If `dif.exp` is TRUE, then the function uses **edgeR** functions **glmFit()** and **glmRT()** to find differentially expressed genes between one cluster and all the other columns of `data`. If `dif.exp` is FALSE, then the function skips the differential gene analysis.  
+
+If the user does not set `c.names`, the clusters will be named from 1 to the maximum number of clusters (cluster 1, cluster 2, ...). The user can exploit the `c.names` vector in the list returned by the **cell_classifier()** function for this purpose. The user can also provide her own cluster names. 
+
+`s.pval`  is the adjusted (Benjamini-Hochberg) p-value threshold imposed to gene differential expression.  
+
+If `markers` is set, it must be a table with gene signatures for one cell type in each column. The column names are the names of the cell types. If `markers` is not provided, then the function skips the cluster cell type calling step.   
+   
+If `write` and `dif.exp` are both TRUE, then the function writes a text file named "table_dge_X.txt", where X is the cluster name, that contains the list of differentially expressed genes. If `write` is TRUE and `markers` is provided, then the function writes in a second text file a table containing probabilities of assignments of each cluster to a cell type for each cell cluster. This cell type calling is performed as for the individual cells without thresholding but based on the cluster average transcriptome. 
+
+Remark: this function can be used with any `data` table associated with corresponding `genes` and `cluster` vectors, meaning that advanced users can perform their own data normalization and cell clustering upfront.    
+
+
+### Value
+
+
+ The function returns a list comprised of a table of differentially expressed genes, a table of cell types, and a table of cell cluster types.
+
+
+### Example
+
+```{r, eval=TRUE, results='hide'}  
+ data=matrix(runif(1000,0,1),nrow=5,ncol=200)
+ rownames(data) = c("A2M","LRP1","AANAT","MTNR1A","ACE")
+ cluster=c(rep(1,100),rep(2,100))
+ cluster_analysis(data,rownames(data),cluster,dif.exp=FALSE)
+``` 
+
+---
+
+## **clustering()**
+
+### Description
+
+
+ Identifies the cell clusters, i.e. the cell subpopulations.
+
+
+### Usage
+
+```r
+clustering(data, n.cluster = 0, n = 10, method = c("simlr", "kmeans"), plot = TRUE, pdf = TRUE, write = TRUE)
+```
+
+
+### Arguments
+
+Argument      |Description
+------------- |----------------
+`data`     |     a data frame of n rows (genes) and m columns (cells) of read or UMI counts (note : rownames(data)=genes)
+`n.cluster`     |     a number, an estimation of the ideal number of clusters is computed if equal to 0
+`n`     |     a number, the maximum to consider for an automatic determination of the ideal number of clusters
+`method`     |     "kmeans" or "simlr"
+`plot`     |     a logical
+`pdf`     |     a logical
+`write`     |     a logical
+
+### Details
+
+ 
+If the user knows the number of clusters present in her data set, then `n.cluster` can be set and the estimation of the number of clusters is skipped.   
+
+`n` is the maximum number of clusters that the automatic estimation of the number of clusters will consider. It is ignored if `n.cluster` is provided.  
+
+`method` must be "simlr" or "kmeans" exclusively. If set to "simlr", then the function uses the **SIMLR()** function (**SIMLR** package) to perform clustering. If set to "kmeans" the function will perform a dimensionality reduction by principal component analysis (PCA) followed by K-means clustering and 2-dimensional projection by t-distributed stochastic neighbor embedding (t-SNE). Regardless of the value of `method` ("simlr" or "kmeans"), in case `n.cluster` is not provided, then the function relies on the **SIMLR_Estimate_Number_of_Clusters()** function to determine the number of clusters, between 2 and `n`.  
+
+If `plot` is TRUE, then the function displays the t-SNE map with each cell colored according to the cluster it belongs to. If `method` argument is "simlr", then it further displays a heatmap of the similarity matrix calculated by the **SIMLR()** function.   
+
+If `pdf` is TRUE, then the function exports the t-SNE plot in a pdf file in the *images* folder. The file is named "t-SNE_map-X.pdf", where X is the `method` argument.   
+  
+If `write` is TRUE, then the function writes two text files in the *data* folder. The first one is called "cluster-Y-X.txt", containing the cluster vector assigning each cell of `data` to a cluster. The second one is called "tsne-Y-X.txt", containing the coordinates of each cell in the 2D t-SNE projection. "X" is the `method` argument anf "Y" is the retained number of clusters.   
+
+
+### Value
+
+ The function returns a list containing a numeric vector specifying the cluster assignment for each cell, a 2D t-SNE projection, and the number of cells per cluster.
+
+### Example
+
+```{r, eval=TRUE, results='hide'} 
+data <- matrix(runif(100000,0,1),nrow=500,ncol=200)
+clustering(data,20,2)
+```
+
+---
+
+## **data_prepare()**
+
+### Description
+
+
+ Prepares the data for further analysis.
+
+
+### Usage
+
+```r
+  data_prepare(file, most.variables = 0, lower = 0, upper = 0, lognorm = TRUE, write = TRUE, show.hist.cols = FALSE, verbose = TRUE)
+```
+
+
+### Arguments
+
+Argument      |Description
+------------- |----------------
+`file`     |     a string for the scRNAseq data file
+`most.variables`     |     a number
+`lower`     |     a number in [0,1], low quantile threshold
+`upper`     |     a number in [0,1], high quantile threshold
+`normalize`     |     a logical, if TRUE, then computes 99th percentile normalization
+`write`     |     a logical
+`show.hist.cols`     |     a logical
+`verbose`     |     a logical
+
+### Details
+
+`file` is the path to the file containing the read or UMI count matrix the user wants to analyze.  
+
+`most.variables` can be set to N to select the Nth most variables genes. This option allows the user to use a reduced matrix (N x number of cells) to perform the clustering step faster.   
+
+`lower` and `upper` are used to remove the genes whose average counts are outliers. The values of these arguments are fractions of the total number of genes and hence must be between 0 and 1. Namely, if `lower = 0.05`, then the function removes the 5% less expressed genes and if `upper = 0.05`, then the function removes the 5% most expressed genes.  
+
+If `normalize` is FALSE, then the function skips the 99th percentile normalization and the log transformation  
+ 
+If `write` is TRUE, then the function writes two text files. One for the normalized and gene thresholded read counts table and another one for the genes that passed the lower and upper threshold. Note that the length of the genes vector written in the *genes.txt* file is equal to the number of rows of the table of read counts written in the *data.txt* file.  
+
+
+### Value
+
+
+ The function returns a data frame of filtered and/or normalized data with genes as row names.
+
+
+### Example
+
+```r
+ data_prepare("~/scRNAseq_dataset.txt")
+``` 
+
+---
+
+## **expression.plot()**
+
+### Description
+
+
+ Displays the level of expression of a gene in each cell on the 2D projected data.
+
+
+### Usage
+
+```r
+expression.plot(data, name, tsne, colors = c("default", "rainbow", "heat"))
+```
+
+
+### Arguments
+
+Argument      |Description
+------------- |----------------
+`data`     |     a data frame of n rows (genes) and m columns (cells) of read or UMI counts (note : rownames(data)=genes)
+`name`     |     the identifier of the gene of interest
+`tsne`     |     a table of n rows and 2 columns with 2D projection coordinates for each cell
+`colors`     |     "default" returns the default colorpanel, also accepts "rainbow" or "heat"
+
+### Details
+
+This function displays the expression level of a gene of interest on a 2D projection.
+
+`name` can be any character that corresponds to a row name of `data`.
+
+`tsne` corresponds to the 2D coordinates for each cell. Although t-SNE maps are widely used to display cells on a 2D projection, the user can provide any table with two columns and a number of rows equal to the number of columns of *data* (i.e. the two first components of a PCA).  
+
+`colors` must be "default", "rainbow" or "heat" exclusively. "rainbow" and "heat" are the color palettes provided in R.  
+
+
+### Value
+
+
+ The function returns a R plot.
+
+
+### Example
+
+```{r, eval=TRUE, results='hide'} 
+ data = matrix(runif(5,0,1),ncol=5)
+ data[2] = data[5] = 0
+ rownames(data) = "gene 1"
+ tsne = matrix(runif(10,0,1),ncol=2)
+ expression.plot(data,"gene 1",tsne)
+```
+
+
+---
+
+## **expression.plot.2()**
+
+### Description
+
+
+ Displays the level of expression of two genes in each cell on the 2D projected data.
+
+
+### Usage
+
+```r
+  expression.plot.2(data, name.1, name.2, tsne)
+```
+
+
+### Arguments
+
+Argument      |Description
+------------- |----------------
+`data`     |     a data frame of n rows (genes) and m columns (cells) of read or UMI counts (note : rownames(data)=genes)
+`name.1`     |     the identifier of the first gene of interest
+`name.2`     |     the identifier of the second gene of interest
+`tsne`     |     a table of n rows and 2 columns with t-SNE projection coordinates for each cell
+
+
+### Details
+
+This function can be used independantly from any other. It displays the expression level of two genes of interest on a 2D projection.
+
+`name.1` and `name.2` can be any characters that correspond to a row name of `data`.  
+
+### Value
+
+
+ The function returns a R plot.
+
+
+### Example
+
+```{r, eval=TRUE, results='hide'} 
+ data = matrix(runif(10,0,1),ncol=5)
+ data[1,1:3] = 0
+ data[2,4:5] = 0 
+ rownames(data) = c("gene 1","gene 2")
+ tsne = matrix(runif(10,0,1),ncol=2)
+ expression.plot.2(data, "gene 1", "gene 2", tsne)
+``` 
+
+---
+
+## **inter_network()**
+
+### Description
+
+
+ Computes intercellular gene networks.
+
+
+### Usage
+
+```r
+inter_network = function(data,genes,cluster,signal,c.names=NULL,species=c("homo sapiens","mus musculus"),write=TRUE,verbose=TRUE)
+```
+
+
+### Arguments
+
+Argument      |Description
+------------- |----------------
+`data`     |     a data frame of n rows (genes) and m columns (cells) of read or UMI counts (note : rownames(data)=genes)
+`genes`     |     a character vector of HUGO official gene symbols of length n
+`cluster`     |     a numeric vector of length m
+`signal`     |     (optional) a list (result of the **cell_signaling()** function)
+`c.names`     |     (optional) cluster names
+`species`     |     "homo sapiens" or "mus musculus"
+`write`     |     a logical (if TRUE writes graphML and text files for the interface network)
+`verbose`     |     a logical
+
+
+### Details
+
+
+`signal` is a list containing the cell-cell interaction tables. It is the result of the **cell_signaling()** function.    
+
+If the user does not set `c.names`, the clusters will be named from 1 to the maximum number of clusters (cluster 1, cluster 2, ...). The user can exploit the `c.names` vector in the list returned by the **cell_classifier()** function for this purpose. The user can also provide her own cluster names. 
+
+`species` must be equal to "homo sapiens" or "mus musculus". In the case of mouse data, the function converts mouse genes in human orthologs (according to Ensembl) such that the Reactome/KEGG interaction database can be exploited, and finally output genes are converted back to mouse.   
+
+If `write` is TRUE, then the function writes four different files. A graphML file in the *cell-signaling* folder for intercellular interactions between each pair of clusters named "intercell_network_Z~1~-Z~2~.graphml", where Z~1~ and Z~2~ are the *c.names* of the clusters. A graphML file in the *cell-signaling* folder that contains a compilation of all the intercellular, ligand-receptor interactions named "full-intercellular-network.graphml". A text and a graphML file in the *networks* folder containing the intracellular network for each cell cluster named "intracell_network_Z.txt" and "intracell_network_Z.graphml", where Z is the *c.names* of the cluster.  
+
+
+### Value
+
+
+The function returns a list containing the tables of interaction between two cell types and the table for the full network of all the cell types.
+
+
+### Example
+
+```{r, eval=TRUE, results='hide'}  
+ m = data.frame(cell.1=runif(10,0,2),cell.2=runif(10,0,2),cell.3=runif(10,0,2),
+ cell.4=runif(10,0,2),cell.5=runif(10,0,2),cell.6=runif(10,0,2),cell.7=runif(10,0,2))
+ rownames(m) = paste("gene", 1:10)
+ cluster = c(1,1,1,2,3,3,2)
+ inter_network(m,rownames(m),cluster,signal=NULL)
+``` 
+---
+
+## **intra_network()**
+
+### Description
+
+
+ Computes intracellular networks linked to genes of interest.
+
+
+### Usage
+
+```r
+intra_network = function(goi,data,genes,cluster,coi,cell.prop=0.2,c.names=NULL,signal=NULL,write=TRUE,plot=TRUE,add.lig=TRUE,species=c("homo sapiens","mus musculus"),connected=FALSE,verbose=TRUE)
+```
+
+
+### Arguments
+
+Argument      |Description
+------------- |----------------
+`goi`     |     a vector containing genes of interest (typically one or more receptors)
+`data`     |     a data frame of n rows (genes) and m columns (cells) of read or UMI counts (note : rownames(data)=genes)
+`genes`     |     a character vector of HUGO official gene symbols of length n
+`cluster`     |     a numeric vector of length m
+`coi`     |     name of the cluster of interest
+`cell.prop`     |     a threshold, only the genes expressed in this proportion of the cells of the coi will be taken into account
+`c.names`     |     (optional) cluster names
+`signal`     |     (optional) a list (result of the **cell_signaling()** function)
+`species`     |     "homo sapiens" or "mus musculus"
+`write`     |     a logical (if TRUE writes graphML and text files for the internal network)
+`plot`     |     a logical
+`add.lig`     |     a logical (if TRUE adds the goi associated ligands from signal to the network)
+`connected`     |     a logical (if TRUE keeps only the genes connected to the goi)
+`verbose`     |     a logical
+
+
+### Details
+
+
+`signal` is a list containing the cell-cell interaction tables. It is the result of the **cell_signaling()** function.    
+
+`cell.prop` is set to 0.2 by default to avoid unreadable downstream networks. However if the calculated network too small or non-existent (or too big) the user can try lower (or higher) values.   
+
+If the user does not set `c.names`, the clusters will be named from 1 to the maximum number of clusters (cluster 1, cluster 2, ...). The user can exploit the `c.names` vector in the list returned by the **cell_classifier()** function for this purpose. The user can also provide her own cluster names. 
+
+`species` must be equal to "homo sapiens" or "mus musculus". In the case of mouse data, the function converts mouse genes in human orthologs (according to Ensembl) such that the Reactome/KEGG interaction database can be exploited, and finally output genes are converted back to mouse.   
+
+If `write` is TRUE, then the function writes four different files. A graphML file in the *cell-signaling* folder for intercellular interactions between each pair of clusters named "intercell_network_Z~1~-Z~2~.graphml", where Z~1~ and Z~2~ are the *c.names* of the clusters. A graphML file in the *cell-signaling* folder that contains a compilation of all the intercellular, ligand-receptor interactions named "full-intercellular-network.graphml". A text and a graphML file in the *networks* folder containing the intracellular network for each cell cluster named "intracell_network_Z.txt" and "intracell_network_Z.graphml", where Z is the *c.names* of the cluster.  
+
+
+### Value
+
+
+The function returns a list of tables, one for each element in goi.
+
+
+### Example
+
+```{r, eval=TRUE, results='hide'}  
+ m = data.frame(cell.1=runif(10,0,2),cell.2=runif(10,0,2),cell.3=runif(10,0,2),
+ cell.4=runif(10,0,2),cell.5=runif(10,0,2),cell.6=runif(10,0,2),cell.7=runif(10,0,2))
+ rownames(m) = paste("gene", 1:10)
+ cluster = c(1,1,1,2,3,3,2)
+ inter_network(m,rownames(m),cluster,signal=NULL)
+``` 
+
+---
+
+
+## **markers()**
+
+### Description
+
+
+ Provides a table of cell type specific markers.
+
+
+### Usage
+
+```r
+markers(category = c("immune", "tme", "melanoma", "bc"))
+```
+
+
+### Arguments
+
+Argument      |Description
+------------- |----------------
+`category`     |     one or several of the following "immune", "tme", "melanoma", "bc"
+
+### Details
+
+To use this function the user must have some knowledge about the cell composition of her data set. For instance, if the dataset comes from a breast cancer tumor, the user may select "bc", but also "immune" and "tme" for cells of the microenvironment (see **Examples of use** below).  
+
+### Value
+
+
+ The function returns a cell type specific markers table.
+
+
+## Example
+
+```{r, eval=TRUE, results='hide'}  
+ markers(c("immune","bc"))
+``` 
+
+---
+
+## **mv_interactions()**
+
+### Description
+
+
+ Displays a heatmap showing the most variable interactions over all clusters.
+
+
+### Usage
+
+```r
+mv_interactions = function(data,genes,cluster,c.names=NULL,n=30,species=c("homo sapiens","mus musculus"))
+```
+
+
+### Arguments
+
+Argument      |Description
+------------- |----------------
+`data`     |     a data frame of n rows (genes) and m columns (cells) of read or UMI counts (note : rownames(data)=genes)
+`genes`     |     a character vector of HUGO official gene symbols of length n
+`cluster`     |     a numeric vector of length m
+`c.names`     |     (optional) cluster names
+`n`     |     an integer, the number of most variables interactions
+`species`     |     "homo sapiens" or "mus musculus"
+
+### Details
+
+To use this function the user must have some knowledge about the cell composition of her data set. For instance, if the dataset comes from a breast cancer tumor, the user may select "bc", but also "immune" and "tme" for cells of the microenvironment (see **Examples of use** below).  
+
+### Value
+
+
+ The function returns a cell type specific markers table.
+
+
+## Example
+
+```{r, eval=TRUE, results='hide'}  
+ markers(c("immune","bc"))
+``` 
+
+---
+
+## **visualize()**
+
+### Description
+
+
+ Creates chord diagrams from the interactions tables.
+
+
+### Usage
+
+```r
+visualize(inter, show.in = NULL, write.in = NULL, write.out = FALSE, method = "default", limit = 30)
+```
+
+
+### Arguments
+
+Argument      |Description
+------------- |----------------
+`inter`     |     a list of data frames result of the **cell_signaling()** function
+`show.in`     |     a vector of which elements of `inter` must be shown
+`write.in`     |     a vector of which elements of `inter` must be written
+`write.out`     |     a logical
+`method`     |     a string (usually relative to the experiment)
+`limit`     |     a value between 1 and number of interactions
+
+### Details 
+
+`show.in` gives the elements of `inter` to be displayed in the plot window.  
+
+`write.in` gives the elements of `inter` to be written as pdf files in the *images* folder.  
+
+If `write.out` is TRUE, then the function writes a pdf file with a summary of the all the interactions of `inter` as a chord diagram.  
+
+`limit` is the maximum number of interactions displayed on one chord diagram. Raising this limit over 30 may decrease the visibility.  
+
+
+### Value
+
+
+ The function returns images in the plot window of Rstudio and images in the pdf format in the *images* folder.
+
+
+### Example
+
+```{r, eval=TRUE, results='hide'}  
+ int.1 = matrix(c("gene 1","gene 1", "gene 2", "gene 3"),ncol=2)
+ colnames(int.1) = c("cluster 1","cluster 2" )
+ int.2 = matrix(c("gene 1","gene 4","gene 4","gene 2","gene 3","gene 3"),ncol=2)
+ colnames(int.2) = c("cluster 1","cluster 3" )
+ inter = list(int.1,int.2)
+ visualize(inter)
+``` 
+
+<span style="color:white">red</span>   
+<span style="color:white">red</span>   
+<span style="color:white">red</span> 
+
+---
+
+# Examples of use
+
+---
+
+### **Exploiting the cell_classifier clustering**  
+  
+  
+```{r, echo=FALSE, eval=TRUE, results='hide'}
+data(example_dataset.2, package = "SingleCellSignalR")
+data = example_dataset.2
+genes = data$genes
+rownames(data) = genes
+data = data[,-1]
+```  
+  
+After running the example in the **Quick Start** section, the user can define cell clusters after the output of the **cell_classifier()**. The demo data set is comprised of a subset of the 10x PBMC dataset [3], i.e. immune cells. The t-SNE map calculated with the **clustering()** function will also be used. For this example we will set the `plot.details` argument to TRUE to monitor the choice of the threshold of gene signature scores.
+
+```{r, eval=TRUE, results='hide'} 
+class = cell_classifier(data=data, genes=rownames(data), markers = markers(c("immune")), tsne=clust$`t-SNE`,plot.details=TRUE,write = FALSE)
+
+```
+
+
+Let us use the cell clustering obtained with the **cell_classifier()** function. Although "undefined" cells may be interesting in some cases, here they form a heterogeneous cluster because they represent cells that seem to be in a transition between two states ("T-cells" and "Cytotoxic cells", or "Neutrophils" and "Macrophages", see heatmap above). We discard these cells.  
+```{r, eval=TRUE, results='hide'} 
+# Define the cluster vector and the cluster names 
+cluster <- class$cluster
+c.names <- class$c.names
+
+# Remove undefined cells 
+data <- data[,cluster!=(max(cluster))]
+tsne <- clust$`t-SNE`[cluster!=(max(cluster)),]
+c.names <- c.names[-max(cluster)]
+cluster <- cluster[cluster!=(max(cluster))]
+```
+Then the analysis can be carried on.
+```{r, eval=TRUE} 
+clust.ana <- cluster_analysis(data = data, genes = rownames(data), cluster = cluster, c.names = c.names, write = FALSE)
+```
+Once the cluster analysis is done, the **cell_signaling()**, **inter_network()** functions can be used.
+```{r, eval=TRUE} 
+signal <- cell_signaling(data = data, genes = genes, cluster = cluster, c.names = c.names, write = FALSE)
+
+inter.net <- inter_network(data = data, signal = signal, genes = genes, cluster = cluster, write = FALSE)
+```
+If we take a look at `signal[[6]]` (or `signal[["B-cells-Macrophages"]]`)
+```{r, eval=TRUE} 
+signal[[6]]
+```
+We can be interested in genes participating in pathways with a receptor of interest inside a cluster of interest. Let us say *PTGIR* in "T-cells".  
+```{r, eval=TRUE} 
+intra = intra_network(goi = "ASGR1",data = data,genes = rownames(data),cluster = cluster, coi = "Macrophages", c.names = c.names, signal = signal)
+```
+
+
+Now, let us take an overview of the signaling between the cell types.  
+```{r, eval=TRUE} 
+visualize(signal)
+```
+
+Let us get deeper and look at the signaling between "T-cells" and "B-cells" for example.  
+```{r, eval=TRUE} 
+visualize(signal, show.in=c(1,6))
+```
+
+The following command will save these plots in the *images* folder.
+```r
+> visualize(signal, write.in=c(1,6))
+```
+---
+  
+### **Marker analysis on a cancer dataset**  
+For this example we use the scRNAseq dataset from Tirosh et al. [4]. We use only the data from patient 80.
+```r
+> file <- "patient_80.txt"
+> data <- data_prepare(file = file)
+log-Normalization
+19452 genes
+480 cells
+Zero rate = 75.5%
+```
+*Remark: One can notice that the zero rate is lower than in the previous example which reflects the fact that the sequencing is deeper.*  
+We know that this dataset is composed of melanoma cells and their microenvironment, we hence define our markers table using the **markers()** function.  
+```r
+> my.markers <- markers(category = c("immune", "tme", "melanoma"))
+> head(my.markers)
+  T-cells B-cells Macrophages Cytotoxic cells      DC Mast cells Neutrophils NK cells  Treg Endothelial cells   CAFs melanoma
+1     CD2    CD19       CD163            PRF1   CCL13      TPSB2        FPR1     XCL1 FOXP3            PECAM1    FAP      MIA
+2    CD3D   CD79A        CD14            GZMA   CD209     TPSAB1     SIGLEC5     XCL2                     VWF   THY1      TYR
+3    CD3E   CD79B       CSF1R            GZMB HSD11B1       CPA3       CSF3R     NCR1                    CDH5    DCN  SLC45A2
+4    CD3G     BLK        C1QC            NKG7              MS4A2        FCAR  KIR2DL3                   CLDN5 COL1A1    CDH19
+5    CD8A   MS4A1       VSIG4            GZMH                HDC      FCGR3B  KIR3DL1                   PLVAP COL1A2     PMEL
+6   SIRPG   BANK1        C1QA           KLRK1                        CEACAM3  KIR3DL2                   ECSCR COL6A1  SLC24A5
+```
+Let us perform the clustering. For this example, we set the *method* argument to "kmeans" and the *n* argument to 12.  
+```r
+> clust <- clustering(data = data,n = 12, method = "kmeans")
+Estimating the number of clusters
+Estimated number of clusters = 6
+6 clusters detected
+cluster 1 -> 157 cells
+cluster 2 -> 15 cells
+cluster 3 -> 137 cells
+cluster 4 -> 6 cells
+cluster 5 -> 114 cells
+cluster 6 -> 51 cells
+```
+![][id10]
+
+[id10]: /Users/simon.cabello/Desktop/article/example/Rplot10.png
+
+Now we take advantage of the `markers` argument of the **cluster_analysis()** function using *my.markers* obtained above with the  **markers()** function.  
+
+```r
+> clust.ana <- cluster_analysis(data = data, genes = rownames(data), cluster = clust$cluster, markers = my.markers)
+edgeR differential gene expression (dge) processing:
+Looking for differentially expressed genes in cluster 1
+Looking for differentially expressed genes in cluster 2
+Looking for differentially expressed genes in cluster 3
+Looking for differentially expressed genes in cluster 4
+Looking for differentially expressed genes in cluster 5
+Looking for differentially expressed genes in cluster 6
+```
+![][id11]
+
+[id11]: /Users/simon.cabello/Desktop/article/example/Rplot11.png
+
+We can see that the clusters 2 and 5 are well defined, they are respectively cancer associated fibroblasts (CAFs) and melanoma cells. The cluster 6 is also clearly composed of endothelial cells. Clusters 1 and 2 are immune cells but the clustering did not succeed in sorting them correctly and cluster 4 counts only 6 cells. Those do not seem to be homogeneous and we decide to remove them.  
+```r
+> data <- data[,clust$cluster!=4]
+> cluster <- clust$cluster[clust$cluster!=4]
+> cluster[cluster>4] <- cluster[cluster>4] - 1
+```
+Then we can name our clusters manually before pursuing the analysis.  
+```r
+> c.names <- c("Immune 1", "CAFs", "Immune 2", "melanoma", "endothelial")
+> signal <- cell_signaling(data = data, genes = rownames(data), cluster = cluster, c.names = c.names)
+Paracrine signaling: 
+Checking for signaling between cell types
+78 interactions from Immune 1 to CAFs
+30 interactions from Immune 1 to melanoma
+11 interactions from Immune 1 to endothelial
+67 interactions from CAFs to Immune 1
+85 interactions from CAFs to Immune 2
+86 interactions from CAFs to melanoma
+78 interactions from CAFs to endothelial
+84 interactions from Immune 2 to CAFs
+55 interactions from Immune 2 to melanoma
+44 interactions from Immune 2 to endothelial
+12 interactions from melanoma to Immune 1
+33 interactions from melanoma to CAFs
+19 interactions from melanoma to Immune 2
+12 interactions from melanoma to endothelial
+53 interactions from endothelial to Immune 1
+33 interactions from endothelial to CAFs
+69 interactions from endothelial to Immune 2
+28 interactions from endothelial to melanoma
+```
+*Remark: the names of the dge tables in the* cluster_analysis *folder must be changed according to the cluster names (c.names).*  
+And now visualize!
+```r
+> visualize(signal, show.in = c(12,18))
+```
+![][id16]
+
+[id16]: /Users/simon.cabello/Desktop/article/example/Rplot16.png
+![][id13]
+
+[id13]: /Users/simon.cabello/Desktop/article/example/Rplot13.png
+![][id12]
+
+[id12]: /Users/simon.cabello/Desktop/article/example/Rplot12.png
+
+*Remark: We observe that in the chord diagrams above, the "specific" interactions were highlighted with a thick black line.*  
+Let us look at one of these specific interactions using the **expression.plot.2()** function.  
+```r
+> expression.plot.2(data,"NID1","COL13A1",clust$`t-SNE`)
+```
+![][id17]
+
+[id17]: /Users/simon.cabello/Desktop/article/example/Rplot17.png
+
+
+<span style="color:white">red</span>   
+<span style="color:white">red</span>   
+<span style="color:white">red</span> 
+
+Thank you for reading this guide and for using **SingleCellSignalR**.
+
+----
+
+## *References*
+
+1. Wang B, Zhu J, Pierson E, Ramazzotti D, Batzoglou S. Visualization and analysis of single-cell RNA-seq data by kernel-based similarity learning. Nat Methods. 2017;14:414-6.
+
+2. McCarthy DJ, Chen Y, Smyth GK. Differential expression analysis of multifactor RNA-Seq experiments with respect to biological variation. Nucleic Acids Res. 2012;40:4288-97.
+
+3. 8k PBMCs from a Healthy Donor [Internet]. 2017. Available from: https://support.10xgenomics.com/single-cell-gene-expression/datasets/2.1.0/pbmc8k
+
+4. Tirosh I, Izar B, Prakadan SM, Wadsworth MH, Treacy D, Trombetta JJ, et al. Dissecting the multicellular ecosystem of metastatic melanoma by single-cell RNA-seq. Science. 2016;352:189-96.
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
