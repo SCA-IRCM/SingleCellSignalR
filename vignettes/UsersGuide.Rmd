@@ -62,6 +62,7 @@ log-Normalization
 Zero rate = 89.6%
 ```
 ```{r, echo=FALSE, eval=TRUE, results='hide'}
+library(SingleCellSignalR)
 data(example_dataset, package = "SingleCellSignalR")
 data = example_dataset
 genes = data$genes
