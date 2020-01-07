@@ -47,7 +47,7 @@ Each analysis is organized around a working directory (or project folder):
 
 ![][id0]
 
-[id0]: /Users/simon.cabello/Desktop/article/example/directory.png
+[id0]: ./directory.png
   
 The file containing the read counts should be placed in the working directory.  
 ```r
@@ -74,7 +74,7 @@ The **data_prepare()** function eliminates non expressed genes before performing
 
 Normalized data are submitted to a clustering algorithm to identify cell subpopulations:  
 ```{r, eval=TRUE}
-clust <- clustering(data = data,n.cluster = 4, n = 10, method = "simlr",write = FALSE)
+clust <- clustering(data = data,n.cluster = 4, n = 10, method = "simlr",write = FALSE,pdf=FALSE)
 ```
 
 We set the method argument to `simlr`, which caused the **SIMLR()** function of the SIMLR package [1] to be used. The **SIMLR_Estimate_Number_of_Clusters()** function determined the number of clusters, between 2 and n (n=10 above).  
@@ -200,7 +200,7 @@ If ` write` is TRUE, then the function writes four different text files. (1) The
  rownames(data) <- paste("gene",1:50)
  markers <- matrix(paste("gene",1:10),ncol=5,nrow=2)
  colnames(markers) <- paste("type",1:5)
- cell_classifier(data,rownames(data),markers)
+ cell_classifier(data, rownames(data) , markers, write = FALSE)
 ```
 
 ---
@@ -334,7 +334,7 @@ Remark: this function can be used with any `data` table associated with correspo
  data=matrix(runif(1000,0,1),nrow=5,ncol=200)
  rownames(data) = c("A2M","LRP1","AANAT","MTNR1A","ACE")
  cluster=c(rep(1,100),rep(2,100))
- cluster_analysis(data,rownames(data),cluster,dif.exp=FALSE)
+ cluster_analysis(data,rownames(data),cluster,dif.exp=FALSE,write=FALSE)
 ``` 
 
 ---
@@ -390,7 +390,7 @@ If `write` is TRUE, then the function writes two text files in the *data* folder
 
 ```{r, eval=TRUE, results='hide'} 
 data <- matrix(runif(100000,0,1),nrow=500,ncol=200)
-clustering(data,20,2)
+clustering(data,20,2,write=FALSE,pdf=FALSE)
 ```
 
 ---
@@ -608,7 +608,7 @@ The function returns a list containing the tables of interaction between two cel
  cell.4=runif(10,0,2),cell.5=runif(10,0,2),cell.6=runif(10,0,2),cell.7=runif(10,0,2))
  rownames(m) = paste("gene", 1:10)
  cluster = c(1,1,1,2,3,3,2)
- inter_network(m,rownames(m),cluster,signal=NULL)
+ inter_network(m,rownames(m),cluster,signal=NULL,write=FALSE)
 ``` 
 ---
 
@@ -670,11 +670,10 @@ The function returns a list of tables, one for each element in goi.
 ### Example
 
 ```{r, eval=TRUE, results='hide'}  
- m = data.frame(cell.1=runif(10,0,2),cell.2=runif(10,0,2),cell.3=runif(10,0,2),
- cell.4=runif(10,0,2),cell.5=runif(10,0,2),cell.6=runif(10,0,2),cell.7=runif(10,0,2))
- rownames(m) = paste("gene", 1:10)
- cluster = c(1,1,1,2,3,3,2)
- inter_network(m,rownames(m),cluster,signal=NULL)
+ data=matrix(runif(1000,0,1),nrow=5,ncol=200)
+ genes = c("A2M","LRP1","AANAT","MTNR1A","ACE")
+ cluster=c(rep(1,100),rep(2,100))
+ intra_network(goi=c("TGFBR1","ERBB2"),data,genes,cluster,coi="T-cells",write=FALSE)
 ``` 
 
 ---
@@ -757,8 +756,11 @@ To use this function the user must have some knowledge about the cell compositio
 
 ## Example
 
-```{r, eval=TRUE, results='hide'}  
- markers(c("immune","bc"))
+```{r, eval=TRUE}  
+data=matrix(runif(1000,0,1),nrow=5,ncol=200)
+genes = c("gene 1","gene 2","gene 3","gene 4","gene 5")
+cluster=c(rep(1,100),rep(2,100))
+mv_interactions(data,genes,cluster)
 ``` 
 
 ---
@@ -872,9 +874,9 @@ If we take a look at `signal[[6]]` (or `signal[["B-cells-Macrophages"]]`)
 ```{r, eval=TRUE} 
 signal[[6]]
 ```
-We can be interested in genes participating in pathways with a receptor of interest inside a cluster of interest. Let us say *PTGIR* in "T-cells".  
+We can be interested in genes participating in pathways with a receptor of interest inside a cluster of interest. Let us say *ASGR1* in "Macrophages".  
 ```{r, eval=TRUE} 
-intra = intra_network(goi = "ASGR1",data = data,genes = rownames(data),cluster = cluster, coi = "Macrophages", c.names = c.names, signal = signal)
+intra = intra_network(goi = "ASGR1",data = data,genes = rownames(data),cluster = cluster, coi = "Macrophages", c.names = c.names, signal = signal,write=FALSE)
 ```
 
 
@@ -932,7 +934,7 @@ cluster 6 -> 51 cells
 ```
 ![][id10]
 
-[id10]: /Users/simon.cabello/Desktop/article/example/Rplot10.png
+[id10]: ./Rplot10.png
 
 Now we take advantage of the `markers` argument of the **cluster_analysis()** function using *my.markers* obtained above with the  **markers()** function.  
 
@@ -948,7 +950,7 @@ Looking for differentially expressed genes in cluster 6
 ```
 ![][id11]
 
-[id11]: /Users/simon.cabello/Desktop/article/example/Rplot11.png
+[id11]: ./Rplot11.png
 
 We can see that the clusters 2 and 5 are well defined, they are respectively cancer associated fibroblasts (CAFs) and melanoma cells. The cluster 6 is also clearly composed of endothelial cells. Clusters 1 and 2 are immune cells but the clustering did not succeed in sorting them correctly and cluster 4 counts only 6 cells. Those do not seem to be homogeneous and we decide to remove them.  
 ```r
@@ -988,13 +990,13 @@ And now visualize!
 ```
 ![][id16]
 
-[id16]: /Users/simon.cabello/Desktop/article/example/Rplot16.png
+[id16]: ./Rplot16.png
 ![][id13]
 
-[id13]: /Users/simon.cabello/Desktop/article/example/Rplot13.png
+[id13]: ./Rplot13.png
 ![][id12]
 
-[id12]: /Users/simon.cabello/Desktop/article/example/Rplot12.png
+[id12]: ./Rplot12.png
 
 *Remark: We observe that in the chord diagrams above, the "specific" interactions were highlighted with a thick black line.*  
 Let us look at one of these specific interactions using the **expression.plot.2()** function.  
@@ -1003,7 +1005,7 @@ Let us look at one of these specific interactions using the **expression.plot.2(
 ```
 ![][id17]
 
-[id17]: /Users/simon.cabello/Desktop/article/example/Rplot17.png
+[id17]: ./Rplot17.png
 
 
 <span style="color:white">red</span>   

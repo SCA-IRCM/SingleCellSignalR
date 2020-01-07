@@ -30,7 +30,7 @@
 #' cluster_analysis(data,rownames(data),cluster,dif.exp=FALSE)
 cluster_analysis = function(data,genes,cluster,c.names=NULL,dif.exp=TRUE,
                             s.pval=10^-2,markers=NULL,write=TRUE,verbose=TRUE){
-  if (dir.exists("cluster-analysis")==FALSE){
+  if (dir.exists("cluster-analysis")==FALSE & write==TRUE){
     dir.create("cluster-analysis")
   }
   if (is.null(c.names)==TRUE){
