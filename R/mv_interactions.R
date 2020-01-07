@@ -30,10 +30,6 @@ mv_interactions = function(data,genes,cluster,c.names=NULL,n=30,
   }
   species = match.arg(species)
   if (species=='mus musculus'){
-    mm2Hs = mm2Hs[!is.na(mm2Hs$`Mouse orthology confidence`) &
-                    mm2Hs$`Mouse orthology confidence`==1,c(3,5)]
-    mm2Hs = subset(mm2Hs,!duplicated(mm2Hs$`Gene name`))
-    mm2Hs = subset(mm2Hs,mm2Hs$`Mouse gene name`!="a")
     Hs2mm = mm2Hs[,1]
     mm2Hs = mm2Hs[,2]
     names(mm2Hs) = Hs2mm

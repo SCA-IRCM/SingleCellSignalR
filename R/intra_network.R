@@ -66,10 +66,6 @@ intra_network = function(goi,data,genes,cluster,coi,cell.prop=0.2,c.names=NULL,
   opar = par()
   species = match.arg(species)
   if (species=='mus musculus'){
-    mm2Hs = mm2Hs[!is.na(mm2Hs$`Mouse orthology confidence`) &
-                    mm2Hs$`Mouse orthology confidence`==1,c(3,5)]
-    mm2Hs = subset(mm2Hs,!duplicated(mm2Hs$`Gene name`))
-    mm2Hs = subset(mm2Hs,mm2Hs$`Mouse gene name`!="a")
     Hs2mm = mm2Hs[,1]
     mm2Hs = mm2Hs[,2]
     names(mm2Hs) = Hs2mm
