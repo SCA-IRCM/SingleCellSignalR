@@ -833,8 +833,8 @@ If `write.out` is TRUE, then the function writes a pdf file with a summary of th
   
   
 ```{r, echo=FALSE, eval=TRUE, results='hide'}
-data(example_dataset.2, package = "SingleCellSignalR")
-data = example_dataset.2
+data(example_dataset, package = "SingleCellSignalR")
+data = example_dataset
 genes = data$genes
 rownames(data) = genes
 data = data[,-1]
