@@ -1,6 +1,6 @@
 #' Ligand/Receptor interactions data table
 #'
-#' @format A data frame with 3369 rows of 13 variables:
+#' @format A data frame with 3251 rows of 13 variables:
 #' \describe{
 #'   \item{ligand}{ligand gene symbol}
 #'   \item{receptor}{receptor gene symbol}
