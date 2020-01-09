@@ -1,9 +1,9 @@
 Package: SingleCellSignalR
 Title: Cell Signalling Using Single Cell RNAseq Data Analysis
-Version: 0.99.9
+Version: 0.99.10
 Authors@R: c(person("Simon", "Cabello-Aguilar", email = "simon.cabello-aguilar@inserm.fr", role = c("aut")), person("Jacques", "Colinge", email = "jacques.colinge@inserm.fr", role = c("cre","aut")))
 Description: Allows single cell RNA seq data analysis, clustering, creates internal network and infers cell-cell interactions.
-Depends: R (>= 4.0)
+Depends: R (>= 3.6)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

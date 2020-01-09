@@ -7,7 +7,7 @@
 cell_classifier(
   data,
   genes,
-  markers = markers.default,
+  markers = markers_default,
   tsne = NULL,
   plot.details = FALSE,
   write = TRUE,

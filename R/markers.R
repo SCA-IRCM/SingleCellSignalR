@@ -27,6 +27,6 @@ markers = function(category=c("immune","tme","melanoma","bc")){
       a=c(a,c(seq_len(3)))
     }
   }
-  m=markers.default[,a]
+  m=markers_default[,a]
   return(m)
 }

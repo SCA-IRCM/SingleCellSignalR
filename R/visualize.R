@@ -35,7 +35,7 @@
 #' colnames(int.2) = c("cluster 1","cluster 3" )
 #' inter = list(int.1,int.2)
 #' names(inter) = c("1-2","1-3")
-#' visualize(inter)
+#' visualize_interactions(inter)
 visualize_interactions = function(inter,show.in=NULL,write.in=NULL,write.out=FALSE,
                      method="default",limit=30){
   options(warn=-1)

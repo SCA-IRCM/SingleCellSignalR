@@ -31,7 +31,7 @@
 #' markers = matrix(paste("gene",seq_len(10)),ncol=5,nrow=2)
 #' colnames(markers)=paste("type",seq_len(5))
 #' cell_classifier(data,rownames(data),markers)
-cell_classifier = function(data,genes,markers = markers.default,tsne=NULL,
+cell_classifier = function(data,genes,markers = markers_default,tsne=NULL,
                            plot.details=FALSE,write=TRUE,verbose=TRUE){
   if (dir.exists("cell-classification")==FALSE & write==TRUE){
       dir.create("cell-classification")
