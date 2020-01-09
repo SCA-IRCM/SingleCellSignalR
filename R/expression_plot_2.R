@@ -10,13 +10,12 @@
 #' @export
 #'
 #' @examples
-#' data = matrix(runif(5,0,1),ncol=5)
-#' data[2] = data[5] = 0
-#' rownames(data) = "gene 1"
-#' tsne = matrix(runif(10,0,1),ncol=2)
-#' expression.plot.2(data,"gene 1","gene 2",tsne)
+#' data = matrix(runif(100,0,1),nrow=2,ncol=50)
+#' rownames(data) = c("gene 1", "gene 2") 
+#' tsne = matrix(runif(100,-1,1),ncol=2)
+#' expression_plot_2(data,"gene 1","gene 2",tsne)
 #'
-expression.plot.2 = function(data,name.1,name.2,tsne){
+expression_plot_2 = function(data,name.1,name.2,tsne){
   if (is.element(name.1,rownames(data))==TRUE & is.element(name.2,rownames(data))==TRUE){
     options(warn=-1)
     a = as.numeric(data[name.1,])

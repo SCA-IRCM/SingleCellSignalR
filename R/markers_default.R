@@ -20,4 +20,4 @@
 #'   ...
 #' }
 #' @source \url{EDF R\&D}
-"markers.default"
+"markers_default"

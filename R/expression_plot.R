@@ -15,9 +15,9 @@
 #' data[2] = data[5] = 0
 #' rownames(data) = "gene 1"
 #' tsne = matrix(runif(10,0,1),ncol=2)
-#' expression.plot(data,"gene 1",tsne)
+#' expression_plot(data,"gene 1",tsne)
 #'
-expression.plot = function(data,name,tsne,colors=c("default","rainbow","heat")){
+expression_plot = function(data,name,tsne,colors=c("default","rainbow","heat")){
   options(warn=-1)
   colors = match.arg(colors)
   opar=par()

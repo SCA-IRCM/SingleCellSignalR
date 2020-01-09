@@ -176,7 +176,7 @@ inter_network = function(data,genes,cluster,signal,c.names=NULL,
 
 
 
-#' simplifyInteractions
+#' simplify_interactions
 #'
 #' @param t the network to be simplified
 #' @param lr ligand receptor interactions
@@ -188,8 +188,8 @@ inter_network = function(data,genes,cluster,signal,c.names=NULL,
 #' @examples
 #' t=data.frame(a.gn=c("CEP63","CEP63"),b.gn=c("MZT2A","DYNC1L2"),
 #' type=c("in-complex-with","in-complex-with"))
-#' simplifyInteractions(t)
-simplifyInteractions <- function(t,lr=NULL,autocrine=FALSE){
+#' simplify_interactions(t)
+simplify_interactions <- function(t,lr=NULL,autocrine=FALSE){
 
   mergeText <- function(a,b){
     if (length(a)==0)

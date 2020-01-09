@@ -95,21 +95,21 @@ inter.net <- inter_network(data = data, signal = signal, genes = genes, cluster 
 ```
 
 At this point the intercellular network have been generated and exported in text and graphML formats in the *networks* folder.   
-A summary of the interactions between cell clusters can be output in the form of a chord diagram by the  **visualize()** function:  
+A summary of the interactions between cell clusters can be output in the form of a chord diagram by the  **visualize_interactions()** function:  
 ```{r, eval=TRUE}
-visualize(inter = signal)
+visualize_interactions(inter = signal)
 ```
 
 This function will create a *plot* in the R plot window.  
 
-The details of the interactions between two clusters, for example cluster 1 and 2, can also be shown in the plot window with the **visualize()** function. Note that in the example below we ask for the display of two pairs of cell clusters, pair 1 that contains interactions from cluster 1 to 2, and pair 4 from cluster 2 to 1. (`names(signal)` returns the cell cluster names in each pair, see function **visualize()** details.)   
+The details of the interactions between two clusters, for example cluster 1 and 2, can also be shown in the plot window with the **visualize_interactions()** function. Note that in the example below we ask for the display of two pairs of cell clusters, pair 1 that contains interactions from cluster 1 to 2, and pair 4 from cluster 2 to 1. (`names(signal)` returns the cell cluster names in each pair, see function **visualize_interactions()** details.)   
 ```{r, eval=TRUE}
-visualize(inter = signal,show.in=c(1,4))
+visualize_interactions(inter = signal,show.in=c(1,4))
 ```   
 
-And these plots can be saved into pdf files in the *images* folder using the `write.in` argument of the **visualize()** function.  
+And these plots can be saved into pdf files in the *images* folder using the `write.in` argument of the **visualize_interactions()** function.  
 ```r
-> visualize(inter = signal,write.in=c(1,4))
+> visualize_interactions(inter = signal,write.in=c(1,4))
 ```
 
 <span style="color:white">red</span>   
@@ -136,12 +136,12 @@ And these plots can be saved into pdf files in the *images* folder using the `wr
 + **cluster_analysis()**  
 + **clustering()**  
 + **data_prepare()**  
-+ **expression.plot()**  
-+ **expression.plot.2()**  
++ **expression_plot()**  
++ **expression_plot_2()**  
 + **inter_network()**  
 + **intra_network()**  
 + **markers()**  
-+ **visualize()**  
++ **visualize_interactions()**  
 
 
 
@@ -450,7 +450,7 @@ If `write` is TRUE, then the function writes two text files. One for the normali
 
 ---
 
-## **expression.plot()**
+## **expression_plot()**
 
 ### Description
 
@@ -461,7 +461,7 @@ If `write` is TRUE, then the function writes two text files. One for the normali
 ### Usage
 
 ```r
-expression.plot(data, name, tsne, colors = c("default", "rainbow", "heat"))
+expression_plot(data, name, tsne, colors = c("default", "rainbow", "heat"))
 ```
 
 
@@ -498,13 +498,13 @@ This function displays the expression level of a gene of interest on a 2D projec
  data[2] = data[5] = 0
  rownames(data) = "gene 1"
  tsne = matrix(runif(10,0,1),ncol=2)
- expression.plot(data,"gene 1",tsne)
+ expression_plot(data,"gene 1",tsne)
 ```
 
 
 ---
 
-## **expression.plot.2()**
+## **expression_plot_2()**
 
 ### Description
 
@@ -515,7 +515,7 @@ This function displays the expression level of a gene of interest on a 2D projec
 ### Usage
 
 ```r
-  expression.plot.2(data, name.1, name.2, tsne)
+  expression_plot_2(data, name.1, name.2, tsne)
 ```
 
 
@@ -549,7 +549,7 @@ This function can be used independantly from any other. It displays the expressi
  data[2,4:5] = 0 
  rownames(data) = c("gene 1","gene 2")
  tsne = matrix(runif(10,0,1),ncol=2)
- expression.plot.2(data, "gene 1", "gene 2", tsne)
+ expression_plot_2(data, "gene 1", "gene 2", tsne)
 ``` 
 
 ---
@@ -765,7 +765,7 @@ mv_interactions(data,genes,cluster)
 
 ---
 
-## **visualize()**
+## **visualize_interactions()**
 
 ### Description
 
@@ -776,7 +776,7 @@ mv_interactions(data,genes,cluster)
 ### Usage
 
 ```r
-visualize(inter, show.in = NULL, write.in = NULL, write.out = FALSE, method = "default", limit = 30)
+visualize_interactions(inter, show.in = NULL, write.in = NULL, write.out = FALSE, method = "default", limit = 30)
 ```
 
 
@@ -816,7 +816,7 @@ If `write.out` is TRUE, then the function writes a pdf file with a summary of th
  int.2 = matrix(c("gene 1","gene 4","gene 4","gene 2","gene 3","gene 3"),ncol=2)
  colnames(int.2) = c("cluster 1","cluster 3" )
  inter = list(int.1,int.2)
- visualize(inter)
+ visualize_interactions(inter)
 ``` 
 
 <span style="color:white">red</span>   
@@ -882,17 +882,17 @@ intra = intra_network(goi = "ASGR1",data = data,genes = rownames(data),cluster =
 
 Now, let us take an overview of the signaling between the cell types.  
 ```{r, eval=TRUE} 
-visualize(signal)
+visualize_interactions(signal)
 ```
 
 Let us get deeper and look at the signaling between "T-cells" and "B-cells" for example.  
 ```{r, eval=TRUE} 
-visualize(signal, show.in=c(1,6))
+visualize_interactions(signal, show.in=c(1,6))
 ```
 
 The following command will save these plots in the *images* folder.
 ```r
-> visualize(signal, write.in=c(1,6))
+> visualize_interactions(signal, write.in=c(1,6))
 ```
 ---
   
@@ -986,7 +986,7 @@ Checking for signaling between cell types
 *Remark: the names of the dge tables in the* cluster_analysis *folder must be changed according to the cluster names (c.names).*  
 And now visualize!
 ```r
-> visualize(signal, show.in = c(12,18))
+> visualize_interactions(signal, show.in = c(12,18))
 ```
 ![][id16]
 
@@ -999,9 +999,9 @@ And now visualize!
 [id12]: ./Rplot12.png
 
 *Remark: We observe that in the chord diagrams above, the "specific" interactions were highlighted with a thick black line.*  
-Let us look at one of these specific interactions using the **expression.plot.2()** function.  
+Let us look at one of these specific interactions using the **expression_plot_2()** function.  
 ```r
-> expression.plot.2(data,"NID1","COL13A1",clust$`t-SNE`)
+> expression_plot_2(data,"NID1","COL13A1",clust$`t-SNE`)
 ```
 ![][id17]
 

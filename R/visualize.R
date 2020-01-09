@@ -1,4 +1,4 @@
-#' @title Visualize
+#' @title Visualize interactions
 #' @description Creates chord diagrams from the interactions tables.
 #'
 #' @param inter a list of data frames result of the **cell_signaling()**
@@ -36,7 +36,7 @@
 #' inter = list(int.1,int.2)
 #' names(inter) = c("1-2","1-3")
 #' visualize(inter)
-visualize = function(inter,show.in=NULL,write.in=NULL,write.out=FALSE,
+visualize_interactions = function(inter,show.in=NULL,write.in=NULL,write.out=FALSE,
                      method="default",limit=30){
   options(warn=-1)
   if (dir.exists("images")==FALSE & (is.null(write.in)==FALSE |

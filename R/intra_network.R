@@ -89,7 +89,7 @@ intra_network = function(goi,data,genes,cluster,coi,cell.prop=0.2,c.names=NULL,
   visible.genes = unique(c(rownames(data.tmp)[good],goi))
   visible.n = PwC_ReactomeKEGG[PwC_ReactomeKEGG$a.gn%in%visible.genes &
                                  PwC_ReactomeKEGG$b.gn%in%visible.genes,]
-  red.visible.n = simplifyInteractions(visible.n,LRdb)
+  red.visible.n = simplify_interactions(visible.n,LRdb)
   res=list()
   qq=0
 
@@ -121,7 +121,7 @@ intra_network = function(goi,data,genes,cluster,coi,cell.prop=0.2,c.names=NULL,
           PwC_ReactomeKEGG$b.gn%in%receptors,],
         PwC_ReactomeKEGG[PwC_ReactomeKEGG$a.gn%in%receptors &
                            PwC_ReactomeKEGG$b.gn%in%visible.genes,]))
-      red.contain.n = simplifyInteractions(contain.n)
+      red.contain.n = simplify_interactions(contain.n)
 
       # intersect corr network and receptor-containing network ------------
       key.visible = paste(red.visible.n$a.gn,red.visible.n$b.gn,sep="|")
