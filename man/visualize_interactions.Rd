@@ -5,7 +5,7 @@
 \title{Visualize interactions}
 \usage{
 visualize_interactions(
-  inter,
+  signal,
   show.in = NULL,
   write.in = NULL,
   write.out = FALSE,
@@ -14,12 +14,12 @@ visualize_interactions(
 )
 }
 \arguments{
-\item{inter}{a list of data frames result of the **cell_signaling()**
+\item{signal}{a list of data frames result of the **cell_signaling()**
 function}
 
-\item{show.in}{a vector of which elements of ```inter``` must be shown}
+\item{show.in}{a vector of which elements of ```signal``` must be shown}
 
-\item{write.in}{a vector of which elements of ```inter``` must be written}
+\item{write.in}{a vector of which elements of ```signal``` must be written}
 
 \item{write.out}{a logical}
 
@@ -34,13 +34,27 @@ in the pdf format in the *images* folder.
 \description{
 Creates chord diagrams from the interactions tables.
 }
+\details{
+`show.in` gives the elements of `signal` to be displayed in the plot
+window.
+
+`write.in` gives the elements of `signal` to be written as pdf files
+in the *images* folder.
+
+If `write.out` is TRUE, then the function writes a
+pdf file with a summary of the all the interactions of `signal` as a chord
+diagram.
+
+`limit` is the maximum number of interactions displayed on one chord
+diagram. Raising this limit over 30 may decrease the visibility.
+}
 \examples{
 int.1 = matrix(c("gene 1","gene 1", "gene 2", "gene 3"),ncol=2)
 colnames(int.1) = c("cluster 1","cluster 2" )
 int.2 = matrix(c("gene 1","gene 4","gene 4","gene 2","gene 3","gene 3"),
 ncol=2)
 colnames(int.2) = c("cluster 1","cluster 3" )
-inter = list(int.1,int.2)
-names(inter) = c("1-2","1-3")
-visualize_interactions(inter)
+signal = list(int.1,int.2)
+names(signal) = c("1-2","1-3")
+visualize_interactions(signal)
 }

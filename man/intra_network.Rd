@@ -62,6 +62,34 @@ linked to the genes of interest (goi)
 \description{
 Computes intracellular networks linked to genes of interest.
 }
+\details{
+`signal` is a list containing the cell-cell interaction tables. It
+is the result of the **cell_signaling()** function.
+
+`cell.prop` is set to 0.2
+by default to avoid unreadable downstream networks. However if the calculated
+network is too small or non-existent (or too big) the user can try lower
+(or higher) values.
+
+If the user does not set `c.names`, the clusters will be
+named from 1 to the maximum number of clusters (cluster 1, cluster 2, ...).
+The user can exploit the `c.names` vector in the list returned by the
+**cell_classifier()** function for this purpose. The user can also provide
+her own cluster names.
+
+`species` must be equal to "homo sapiens" or
+"mus musculus". In the case of mouse data, the function converts mouse genes
+in human orthologs (according to Ensembl) such that the Reactome/KEGG
+interaction database can be exploited, and finally output genes are converted
+back to mouse.
+
+If `write` is TRUE, then the function writes two different
+files. A graphML file in the *network* folder for intracellular
+interactions downstream the gene of interest (goi) named
+"intracell_network_coi-receptors.graphml". A text file in the *network*
+folder containing the information about the pathways in which the interactions
+are in, named "intracell_network_pathway_analysis_coi-receptors.txt".
+}
 \examples{
 data=matrix(runif(1000,0,1),nrow=5,ncol=200)
 genes = c("A2M","LRP1","AANAT","MTNR1A","ACE")

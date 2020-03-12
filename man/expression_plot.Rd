@@ -21,6 +21,21 @@ The function returns a R plot.
 \description{
 Displays the level of expression of a gene in each cell on the 2D projected data.
 }
+\details{
+This function displays the expression level of a gene of interest on
+a 2D projection.
+
+`name` can be any character that corresponds to a row name
+of `data`.
+
+`tsne` corresponds to the 2D coordinates for each cell. Although
+t-SNE maps are widely used to display cells on a 2D projection, the user
+can provide any table with two columns and a number of rows equal to the
+number of columns of *data* (i.e. the two first components of a PCA).
+
+`colors` must be "default", "rainbow" or "heat" exclusively. "rainbow" and
+"heat" are the color palettes provided in R.
+}
 \examples{
 data = matrix(runif(5,0,1),ncol=5)
 data[2] = data[5] = 0

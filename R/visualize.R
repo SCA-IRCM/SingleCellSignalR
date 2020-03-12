@@ -1,10 +1,23 @@
 #' @title Visualize interactions
 #' @description Creates chord diagrams from the interactions tables.
 #'
-#' @param inter a list of data frames result of the **cell_signaling()**
+#' @details `show.in` gives the elements of `signal` to be displayed in the plot
+#' window.
+#' @details
+#' `write.in` gives the elements of `signal` to be written as pdf files
+#' in the *images* folder.
+#' @details
+#' If `write.out` is TRUE, then the function writes a
+#' pdf file with a summary of the all the interactions of `signal` as a chord
+#' diagram.
+#' @details
+#' `limit` is the maximum number of interactions displayed on one chord
+#' diagram. Raising this limit over 30 may decrease the visibility.
+#'
+#' @param signal a list of data frames result of the **cell_signaling()**
 #' function
-#' @param show.in a vector of which elements of ```inter``` must be shown
-#' @param write.in a vector of which elements of ```inter``` must be written
+#' @param show.in a vector of which elements of ```signal``` must be shown
+#' @param write.in a vector of which elements of ```signal``` must be written
 #' @param write.out a logical
 #' @param method a string (usually relative to the experiment)
 #' @param limit a value between 1 and number of interactions
@@ -33,10 +46,10 @@
 #' int.2 = matrix(c("gene 1","gene 4","gene 4","gene 2","gene 3","gene 3"),
 #' ncol=2)
 #' colnames(int.2) = c("cluster 1","cluster 3" )
-#' inter = list(int.1,int.2)
-#' names(inter) = c("1-2","1-3")
-#' visualize_interactions(inter)
-visualize_interactions = function(inter,show.in=NULL,write.in=NULL,write.out=FALSE,
+#' signal = list(int.1,int.2)
+#' names(signal) = c("1-2","1-3")
+#' visualize_interactions(signal)
+visualize_interactions = function(signal,show.in=NULL,write.in=NULL,write.out=FALSE,
                      method="default",limit=30){
   options(warn=-1)
   if (dir.exists("images")==FALSE & (is.null(write.in)==FALSE |
@@ -44,8 +57,8 @@ visualize_interactions = function(inter,show.in=NULL,write.in=NULL,write.out=FAL
     dir.create("images")
   }
   c.names = NULL
-  for (i in seq_len(length(inter))){
-    c.names=c(c.names,colnames(inter[[i]])[seq_len(2)])
+  for (i in seq_len(length(signal))){
+    c.names=c(c.names,colnames(signal[[i]])[seq_len(2)])
   }
   c.names = unique(c.names)
   cols = c(rainbow(length(c.names)))
@@ -56,13 +69,13 @@ visualize_interactions = function(inter,show.in=NULL,write.in=NULL,write.out=FAL
 
   nn=NULL
   s=NULL
-  for (i in seq_len(length(inter))){
-    if (is.null(dim(inter[[i]]))==TRUE){
-      nn=rbind(nn,names(inter[[i]])[seq_len(2)])
+  for (i in seq_len(length(signal))){
+    if (is.null(dim(signal[[i]]))==TRUE){
+      nn=rbind(nn,names(signal[[i]])[seq_len(2)])
     } else {
-      nn=rbind(nn,colnames(inter[[i]])[seq_len(2)])
+      nn=rbind(nn,colnames(signal[[i]])[seq_len(2)])
     }
-    s = c(s,nrow(inter[[i]]))
+    s = c(s,nrow(signal[[i]]))
   }
   tmp = cbind(nn,as.numeric(s))
   tmp = tmp[order(as.numeric(tmp[,3])),]
@@ -150,12 +163,12 @@ visualize_interactions = function(inter,show.in=NULL,write.in=NULL,write.out=FAL
   ## Chord diagram of lig/rec interactions --------------
 
   for (n in write.in){
-    if (is.null(dim(inter[[n]]))==TRUE){
-      cnames = names(inter[[n]])
-      tmp = matrix(inter[[n]],ncol=3)
+    if (is.null(dim(signal[[n]]))==TRUE){
+      cnames = names(signal[[n]])
+      tmp = matrix(signal[[n]],ncol=3)
     } else {
-      cnames = colnames(inter[[n]])
-      tmp = inter[[n]]
+      cnames = colnames(signal[[n]])
+      tmp = signal[[n]]
       tmp = tmp[order(as.numeric(tmp[,4]),decreasing = TRUE),]
     }
     if (nrow(tmp)>limit){
@@ -219,12 +232,12 @@ visualize_interactions = function(inter,show.in=NULL,write.in=NULL,write.out=FAL
     dev.off()
   }
   for (n in show.in){
-    if (is.null(dim(inter[[n]]))==TRUE){
-      cnames = names(inter[[n]])
-      tmp = matrix(inter[[n]],ncol=3)
+    if (is.null(dim(signal[[n]]))==TRUE){
+      cnames = names(signal[[n]])
+      tmp = matrix(signal[[n]],ncol=3)
     } else {
-      cnames = colnames(inter[[n]])
-      tmp = inter[[n]]
+      cnames = colnames(signal[[n]])
+      tmp = signal[[n]]
       tmp = tmp[order(as.numeric(tmp[,4]),decreasing = TRUE),]
     }
     if (nrow(tmp)>limit){

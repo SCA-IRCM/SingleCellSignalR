@@ -2,6 +2,62 @@
 #' @description Computes "autocrine" or "paracrine" interactions between cell
 #' clusters.
 #'
+#' @details `int.type` must be equal to "paracrine" or "autocrine" exclusively.
+#' The "paracrine" option looks for ligands expressed in cluster A and their
+#' associated receptors according to LR*db* that are expressed in any other
+#' cluster but A. These interactions are labelled "paracrine". The interactions
+#' that involve a ligand and a receptor, both differentially expressed in their
+#' respective cell clusters according to the **edgeR** analysis performed by the
+#'  **cluster_analysis()** function, are labelled "specific". The "autocrine"
+#' option searches for ligands expressed in cell cluster A and their associated
+#' receptors also expressed in A. These interactions are labelled "autocrine".
+#' Additionally, it searches for those associated receptors in the other cell
+#' clusters (not A) to cover the part of the signaling that is "autocrine" and
+#' "paracrine" simultaneously. These interactions are labelled
+#' "autocrine/paracrine".
+#' @details
+#' The `tol` argument allows the user to tolerate a fraction of the cells in
+#' cluster A to express the receptors in case `int.type="paracrine"`, that is to
+#' call interactions that are dominantly paracrine though not exclusively.
+#' Conversely, it allows the user to reject interactions involving receptors
+#' that would be expressed by a small fraction of cluster A cells in case
+#' `int.type="autocrine"`. By construction theassociation of these two options
+#' covers all the possible interactions and increasing the `tol` argument allows
+#' the user to move interactions from "autocrine" to "paracrine".
+#' @details
+#' If the user does not set `c.names`, the clusters will be named from 1 to the
+#' maximum number of clusters (cluster 1, cluster 2, ...). The user can exploit
+#' the `c.names` vector in the list returned by the **cell_classifier()**
+#' function for this purpose. The user can also provide her own cluster names.
+#' @details
+#' `s.score` is the threshold on the LRscore. The value must lie in the [0;1]
+#' interval, default is 0.5 to ensure confident ligand-receptor pair
+#' identifications (see our publication). Lower values increase the number of
+#' putative interactions while increasing the false positives. Higher values
+#' do the opposite.
+#' @details
+#' `logFC` is a threshold applied to the log fold-change (logFC) computed for
+#' each gene during the differential gene expression analysis. Its default value
+#' is log~2~(1.5) It further selects the differentially expressed genes (>logFC)
+#' after the p-value threshold imposed in the function **cluster_analysis()** below.
+#' @details
+#' `species` must be equal to "homo sapiens" or "mus musculus", default is
+#' "homo sapiens". In the case of mouse data, the function converts mouse genes
+#' in human orthologs (according to Ensembl) such that LR*db* can be exploited,
+#' and finally output genes are converted back to mouse.
+#' @details
+#' If `write` is TRUE, then the function writes a text file that reports the
+#' interactions in the *cell-signaling* folder. This file is a 4-column table:
+#' ligands, receptors, interaction types ("paracrine", "autocrine",
+#' "autocrine/paracrine" and "specific"), and the associated LRscore.
+#' @details
+#' Remarks:
+#' @details- This function can be used with any `data` table associated with
+#' corresponding `genes` and `cluster` vectors, meaning that advanced users can
+#' perform their own data normalization and cell clustering upfront.
+#' @details- In case the function **cluster_analysis()** was not executed, this function
+#' would work but "specific" interactions would not be annotated as such.
+#'
 #' @param data a data frame of n rows (genes) and m columns (cells) of read or
 #' UMI counts (note : rownames(data)=genes)
 #' @param genes a character vector of HUGO official gene symbols of length n
@@ -12,12 +68,14 @@
 #' @param logFC a number, the log fold-change threshold for differentially
 #' expressed genes
 #' @param species "homo sapiens" or "mus musculus"
-#' @param tol a tolerance parameter for balancing between "autocrine" and
-#' "paracrine" interactions
+#' @param tol a tolerance parameter for balancing "autocrine|paracrine"
+#' interactions to the "autocrine" or "paracrine" group
 #' @param write a logical
 #' @param verbose a logical
 #'
-#' @return The function returns "autocrine" or "paracrine" interaction lists.
+#' @return The function returns "paracrine" or "autocrine" interaction lists.
+#' The interactions that are both "paracrine" and "autocrine" are annotated
+#' as "autocrine|paracrine" and are placed in the "autocrine" group by default.
 #'
 #' @export
 #' @importFrom stats median
@@ -259,6 +317,11 @@ cell_signaling = function(data, genes,
                 fwrite(data.frame(final),paste(
                   "./cell-signaling/LR_interactions_",c.names[i],"-",c.names[j],
                   "-",int.type,".txt",sep=""),sep="\t")
+              }
+            } else {
+              if (verbose==TRUE){
+                cat(paste(nrow(final),"No significant interaction found from",c.names[i],"to",
+                                                      c.names[j]),fill=TRUE)
               }
             }
           }

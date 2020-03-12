@@ -2,6 +2,45 @@
 #' @description Analysis of the differentially expressed genes in the clusters
 #' and their composition by a marker based approach.
 #'
+#' @details If `dif.exp` is TRUE, then the function uses **edgeR** functions
+#' **glmFit()** and **glmRT()** to find differentially expressed genes between
+#' one cluster and all the other columns of `data`.
+#' @details
+#' If `dif.exp` is FALSE, then
+#' the function skips the differential gene analysis.
+#' @details
+#' If the user does not set
+#' `c.names`, the clusters will be named from 1 to the maximum number of
+#' clusters (cluster 1, cluster 2, ...). The user can exploit the `c.names`
+#' vector in the list returned by the **cell_classifier()** function for this
+#' purpose. The user can also provide her own cluster names.
+#' @details
+#' `s.pval`  is the
+#' adjusted (Benjamini-Hochberg) p-value threshold imposed to gene differential
+#' expression.
+#' @details
+#' If `markers` is set, it must be a table with gene signatures for
+#' one cell type in each column. The column names are the names of the cell
+#' types.
+#' @details
+#' If `markers` is not provided, then the function skips the cluster
+#' cell type calling step.
+#' @details
+#' If `write` and `dif.exp` are both TRUE, then the
+#' function writes a text file named "table_dge_X.txt", where X is the cluster
+#' name, that contains the list of differentially expressed genes.
+#' @details
+#' If `write` is TRUE and `markers` is provided, then the function writes in a second text
+#' file a table containing probabilities of assignments of each cluster to a
+#' cell type for each cell cluster. This cell type calling is performed as for
+#' the individual cells without thresholding but based on the cluster average
+#' transcriptome.
+#' @details
+#' Remark: this function can be used with any `data` table
+#' associated with corresponding `genes` and `cluster` vectors, meaning that
+#' advanced users can perform their own data normalization and cell clustering
+#' upfront.
+#'
 #' @param data a data frame of n rows (genes) and m columns (cells) of read or
 #' UMI counts (note : rownames(data)=genes)
 #' @param genes a character vector of HUGO official gene symbols of length n

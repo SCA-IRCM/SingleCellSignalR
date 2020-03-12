@@ -1,6 +1,20 @@
 #' @title Expression Plot
 #' @description Displays the level of expression of a gene in each cell on the 2D projected data.
 #'
+#' @details This function displays the expression level of a gene of interest on
+#' a 2D projection.
+#' @details
+#' `name` can be any character that corresponds to a row name
+#' of `data`.
+#' @details
+#' `tsne` corresponds to the 2D coordinates for each cell. Although
+#' t-SNE maps are widely used to display cells on a 2D projection, the user
+#' can provide any table with two columns and a number of rows equal to the
+#' number of columns of *data* (i.e. the two first components of a PCA).
+#' @details
+#' `colors` must be "default", "rainbow" or "heat" exclusively. "rainbow" and
+#' "heat" are the color palettes provided in R.
+#'
 #' @param data a data frame of n rows (genes) and m columns (cells) of read or UMI counts (note : rownames(data)=genes)
 #' @param name the identifier of the gene of interest
 #' @param tsne a table of n rows and 2 columns with 2D projection coordinates for each cell

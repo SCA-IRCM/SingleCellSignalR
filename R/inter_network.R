@@ -1,6 +1,29 @@
 #' @title inter network
 #' @description Computes intercellular gene networks.
 #'
+#' @details `signal` is a list containing the cell-cell interaction tables. It
+#' is the result of the **cell_signaling()** function.
+#' @details
+#' If the user does not set `c.names`, the clusters will be named from 1 to the
+#' maximum number of clusters (cluster 1, cluster 2, ...). The user can exploit
+#' the `c.names` vector in the list returned by the **cell_classifier()**
+#' function for this purpose. The user can also provide her own cluster names.
+#' @details
+#' `species` must be equal to "homo sapiens" or "mus musculus". In the case of
+#' mouse data, the function converts mouse genes in human orthologs
+#' (according to Ensembl) such that the Reactome/KEGG interaction database can
+#' be exploited, and finally output genes are converted back to mouse.
+#' @details
+#' If `write` is TRUE, then the function writes four different files. A graphML
+#' file in the *cell-signaling* folder for intercellular interactions between
+#' each pair of clusters named "intercell_network_Z~1~-Z~2~.graphml", where
+#' Z~1~ and Z~2~ are the *c.names* of the clusters. A graphML file in the
+#' *cell-signaling* folder that contains a compilation of all the intercellular,
+#' ligand-receptor interactions named "full-intercellular-network.graphml".
+#' A text and a graphML file in the *networks* folder containing the intracellular
+#' network for each cell cluster named "intracell_network_Z.txt" and
+#' "intracell_network_Z.graphml", where Z is the *c.names* of the cluster.
+#'
 #' @param data a data frame of n rows (genes) and m columns (cells) of read or
 #' UMI counts (note : rownames(data)=genes)
 #' @param genes a character vector of HUGO official gene symbols of length n
@@ -10,9 +33,12 @@
 #' @param species "homo sapiens" or "mus musculus"
 #' @param write a logical (if TRUE writes graphML and text files for the
 #' interface and internal networks)
+#' @param plot a logical
 #' @param verbose a logical
 #'
-#' @return The function returns a list containing the intercellular networ).
+#' @return The function returns a list containing the tables of interaction
+#' between two cell types and the table for the full network of all the cell
+#' types.
 #'
 #' @export
 #'
@@ -28,7 +54,7 @@
 #'inter_network(m,rownames(m),cluster,signal=NULL)
 inter_network = function(data,genes,cluster,signal,c.names=NULL,
                          species=c("homo sapiens","mus musculus"),
-                         write=TRUE,verbose=TRUE){
+                         write=TRUE,plot=FALSE,verbose=TRUE){
   if (dir.exists("networks")==FALSE & write==TRUE){
     dir.create("networks")
   }
@@ -167,6 +193,24 @@ inter_network = function(data,genes,cluster,signal,c.names=NULL,
       write.graph(g.cell,file=
                     paste0('./networks/full-intercellular-network.graphml'),
                   format="graphml")
+    }
+    if (plot==TRUE){
+      g.plot = graph_from_data_frame(cellint,directed = FALSE)
+      tmp = do.call(rbind,strsplit(unique(c(cellint$ligand,cellint$receptor)),split = ".",fixed = TRUE))
+      cr = rainbow(max(cluster))
+      names(cr) = c.names
+      V(g.plot)$vertex.label = do.call(rbind,strsplit(unique(c(cellint$ligand,cellint$receptor)),split = ".",fixed = TRUE))[,2]
+      V(g.plot)$label.color = "black"
+      V(g.plot)$color = cr[tmp[,1]]
+      V(g.plot)$shape = c("circle")
+      V(g.plot)$shape[unique(c(cellint$ligand,cellint$receptor)) %in% cellint$receptor] = c("square")
+      V(g.plot)$size = 10
+      E(g.plot)$width = cellint$LRscore*4
+      E(g.plot)$color = "gray30"
+
+      plot(g.plot,vertex.label=V(g.plot)$vertex.label,main = "Intercellular communication network")
+      legend("bottomleft",legend = c.names,fill = cr)
+      legend("topleft",legend = c("ligand","receptor"),pch=c(1,0))
     }
   }
   res = list(interface,cellint[,c(1,2,7,8)])

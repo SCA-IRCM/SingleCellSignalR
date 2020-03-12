@@ -36,6 +36,32 @@ a 2D t-SNE projection, and the number of cells per cluster.
 \description{
 Identifies the cell clusters, i.e. the cell subpopulations.
 }
+\details{
+If the user knows the number of clusters present in her data set,
+then `n.cluster` can be set and the estimation of the number of clusters is
+skipped. `n` is the maximum number of clusters that the automatic estimation
+of the number of clusters will consider. It is ignored if `n.cluster` is
+provided. `method` must be "simlr" or "kmeans" exclusively. If set to
+"simlr", then the function uses the **SIMLR()** function (**SIMLR** package)
+to perform clustering. If set to "kmeans" the function will perform a
+dimensionality reduction by principal component analysis (PCA) followed by
+K-means clustering and 2-dimensional projection by t-distributed stochastic
+neighbor embedding (t-SNE). Regardless of the value of `method` ("simlr" or
+"kmeans"), in case `n.cluster` is not provided, then the function relies on
+the **SIMLR_Estimate_Number_of_Clusters()** function to determine the number
+of clusters, between 2 and `n`. If `plot` is TRUE, then the function displays
+the t-SNE map with each cell colored according to the cluster it belongs to.
+If `method` argument is "simlr", then it further displays a heatmap of the
+similarity matrix calculated by the **SIMLR()** function. If `pdf` is TRUE,
+then the function exports the t-SNE plot in a pdf file in the *images*
+folder. The file is named "t-SNE_map-X.pdf", where X is the `method`
+argument. If `write` is TRUE, then the function writes two text files in the
+*data* folder. The first one is called "cluster-Y-X.txt", containing the
+cluster vector assigning each cell of `data` to a cluster. The second one is
+called "tsne-Y-X.txt", containing the coordinates of each cell in the 2D
+t-SNE projection. "X" is the `method` argument anf "Y" is the retained number
+of clusters.
+}
 \examples{
 data=matrix(runif(100000,0,1),nrow=500,ncol=200)
 clustering(data,n.cluster=2,method="kmeans")

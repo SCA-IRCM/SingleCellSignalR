@@ -1,6 +1,40 @@
 #' @title Cell classifier
 #' @description  Classifies cells using cell type specific markers.
 #'
+#' @details
+#' The ` markers` argument must be a table with cell type gene signatures, one
+#' cell type in each column. The column names are the names of the cell types.
+#' @details
+#' The *markers.default* table provides an example of this format.
+#' @details
+#' If ` tsne` is not provided, then the function will just not display the cells
+#' on the t-SNE. Although t-SNE maps are widely used to display cells on a 2D
+#' projection, the user can provide any table with two columns and a number of
+#' rows equal to the number of columns of `data` (e.g. the two first components
+#' of a PCA).
+#' @details
+#' If ` plot.details` is TRUE, then the function plots the number of cells
+#' attributed to a single cell type as a function of the threshold applied to
+#' the normalized gene signature average.
+#' @details
+#' If ` write` is TRUE, then the function writes four different text files. (1)
+#' The "raw classification matrix" provides the normalized average gene
+#' signature for each cell type in each individual cell, a number between 0 and
+#' 1. This matrix has one row per cell type and one column per cell, and the
+#' sum per column is 1. Row names are the cell type names (column names of the
+#' markers table) and the column names are the individual cell identifiers
+#' (column names of `data`). (2) The "thresholded classification matrix", which
+#' is obtained by eliminating all the values of the "raw classification matrix"
+#' that are below a threshold a\*. In practice, a\* is automatically determined
+#' by the function to maximize the number of cells that are assigned to a single
+#' cell type and all the cells (columns) assigned to 0 or >1 cell types are
+#' discarded. The number of cells assigned to a single type depending on a\*
+#' can be plotted by using the parameter `plot.details=TRUE`. (3) A cluster
+#' vector assigning each cell to a cell type. Note that a supplementary,
+#' virtual cluster is created to collect all the cells assigned to 0 or >1
+#' types. This virtual cluster is named "undefined". (4) A table associating
+#' each cell type to a cluster number in the cluster vector.
+#'
 #' @param data a data frame of n rows (genes) and m columns (cells) of read or
 #' UMI counts (note : rownames(data)=genes)
 #' @param genes a character vector of HUGO official gene symbols of length n
@@ -13,12 +47,10 @@
 #' @param verbose a logical
 #'
 #' @return The function returns a list containing the thresholded table, the
-#' maximum table, the raw table, a cluster vector, a pheatmap object
-#' (see pheatmap library) and the cluster names. The maximum table is a special
-#' thresholded table where in every column only the maximum gene signature is
-#' kept. It can be used to force the classification of every cell. The pheatmap
-#' object contains the thresholded matrix, which is the one to be used for most
-#' applications, in a heatmap representation for immediate display purpose.
+#' maximum table, the raw table, a cluster vector and the cluster names. The
+#' maximum table is a special thresholded table where in every column only the
+#' maximum gene signature is kept. It can be used to force the classification
+#' of every cell.
 #'
 #' @export
 #' @import pheatmap

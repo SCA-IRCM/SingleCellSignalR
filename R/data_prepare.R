@@ -1,6 +1,28 @@
 #' @title Data Prepare
 #' @description Prepares the data for further analysis
 #'
+#' @details `file` is the path to the file containing the read or UMI count
+#' matrix the user wants to analyze.
+#' @details
+#' `most.variables` can be set to N to select the Nth most variables genes. This
+#' option allows the user to use a reduced matrix (N x number of cells) to
+#' perform the clustering step faster.
+#' @details
+#' `lower` and `upper` are used to remove the genes whose average counts are outliers.
+#' The values of these arguments are fractions of the total number of genes and
+#' hence must be between 0 and 1. Namely, if `lower = 0.05`, then the function
+#' removes the 5% less expressed genes and if `upper = 0.05`, then the function
+#' removes the 5% most expressed genes.
+#' @details
+#' If `normalize` is FALSE, then the function skips the 99th percentile
+#' normalization and the log transformation.
+#' @details
+#' If `write` is TRUE, then the function writes two text files. One for the
+#' normalized and gene thresholded read counts table and another one for the
+#' genes that passed the lower and upper threshold. Note that the length of the
+#' genes vector written in the *genes.txt* file is equal to the number of rows
+#' of the table of read counts written in the *data.txt* file.
+#'
 #' @param file a string for the scRNAseq data file
 #' @param most.variables a number
 #' @param lower a number in [0,1], low quantile threshold
@@ -10,8 +32,9 @@
 #' @param verbose a logical
 #' @param plot a logical
 #'
-#' @return The function returns a data frame of filtered and/or normalized data with genes as row names. If most.variables is equal to N (>0)
-#' the function returns also a sub matrix of the N most variables genes.
+#' @return The function returns a data frame of filtered and/or normalized data
+#' with genes as row names.
+#'
 #' @export
 #'
 #' @import data.table
@@ -21,11 +44,15 @@
 #'
 #'
 #' @examples
-#' \donttest{data_prepare("~/scRNAseq_dataset.txt")}
+#' data = data_prepare(file = "~/scRNAseq_dataset.txt",write = FALSE)
 data_prepare = function(file, most.variables=0, lower=0, upper=0,normalize=TRUE,write=TRUE,verbose=TRUE, plot=FALSE){
 
   if (dir.exists("data")==FALSE & write==TRUE){
     dir.create("data")
+  }
+  if (!file.exists(file)){
+    cat(paste(file,"doesn't exist."),fill = TRUE)
+    return()
   }
 
   data = fread(file,data.table = FALSE)

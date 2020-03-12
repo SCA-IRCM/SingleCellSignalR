@@ -1,6 +1,11 @@
 #' @title Expression Plot 2
 #' @description Displays the level of expression of two genes in each cell on the 2D projected data.
 #'
+#' @details This function can be used independantly from any other. It displays
+#' the expression level of two genes of interest on a 2D projection.
+#' @details
+#' `name.1` and `name.2` can be any characters that correspond to a row name of `data`.
+#'
 #' @param data a data frame of n rows (genes) and m columns (cells) of read or UMI counts (note : rownames(data)=genes)
 #' @param name.1 the identifier of the first gene of interest
 #' @param name.2 the identifier of the second gene of interest
@@ -11,7 +16,7 @@
 #'
 #' @examples
 #' data = matrix(runif(100,0,1),nrow=2,ncol=50)
-#' rownames(data) = c("gene 1", "gene 2") 
+#' rownames(data) = c("gene 1", "gene 2")
 #' tsne = matrix(runif(100,-1,1),ncol=2)
 #' expression_plot_2(data,"gene 1","gene 2",tsne)
 #'

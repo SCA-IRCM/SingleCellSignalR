@@ -12,6 +12,7 @@ inter_network(
   c.names = NULL,
   species = c("homo sapiens", "mus musculus"),
   write = TRUE,
+  plot = FALSE,
   verbose = TRUE
 )
 }
@@ -32,13 +33,41 @@ UMI counts (note : rownames(data)=genes)}
 \item{write}{a logical (if TRUE writes graphML and text files for the
 interface and internal networks)}
 
+\item{plot}{a logical}
+
 \item{verbose}{a logical}
 }
 \value{
-The function returns a list containing the intercellular networ).
+The function returns a list containing the tables of interaction
+between two cell types and the table for the full network of all the cell
+types.
 }
 \description{
 Computes intercellular gene networks.
+}
+\details{
+`signal` is a list containing the cell-cell interaction tables. It
+is the result of the **cell_signaling()** function.
+
+If the user does not set `c.names`, the clusters will be named from 1 to the
+maximum number of clusters (cluster 1, cluster 2, ...). The user can exploit
+the `c.names` vector in the list returned by the **cell_classifier()**
+function for this purpose. The user can also provide her own cluster names.
+
+`species` must be equal to "homo sapiens" or "mus musculus". In the case of
+mouse data, the function converts mouse genes in human orthologs
+(according to Ensembl) such that the Reactome/KEGG interaction database can
+be exploited, and finally output genes are converted back to mouse.
+
+If `write` is TRUE, then the function writes four different files. A graphML
+file in the *cell-signaling* folder for intercellular interactions between
+each pair of clusters named "intercell_network_Z~1~-Z~2~.graphml", where
+Z~1~ and Z~2~ are the *c.names* of the clusters. A graphML file in the
+*cell-signaling* folder that contains a compilation of all the intercellular,
+ligand-receptor interactions named "full-intercellular-network.graphml".
+A text and a graphML file in the *networks* folder containing the intracellular
+network for each cell cluster named "intracell_network_Z.txt" and
+"intracell_network_Z.graphml", where Z is the *c.names* of the cluster.
 }
 \examples{
 m = data.frame(cell.1=runif(10,0,2),cell.2=runif(10,0,2),cell.3=runif(10,0,2),

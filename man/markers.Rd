@@ -16,6 +16,13 @@ The function returns a cell type specific markers table.
 \description{
 Provides a table of cell type specific markers.
 }
+\details{
+To use this function the user must have some knowledge about the
+cell composition of her data set. For instance, if the dataset comes from a
+breast cancer tumor, the user may select "bc", but also "immune" and "tme"
+for cells of the microenvironment (see **Examples of use** in the User's
+Guide vignette).
+}
 \examples{
 markers(c("immune","bc"))
 
