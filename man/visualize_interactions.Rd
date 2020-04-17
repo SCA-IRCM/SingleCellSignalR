@@ -49,12 +49,12 @@ diagram.
 diagram. Raising this limit over 30 may decrease the visibility.
 }
 \examples{
-int.1 = matrix(c("gene 1","gene 1", "gene 2", "gene 3"),ncol=2)
-colnames(int.1) = c("cluster 1","cluster 2" )
-int.2 = matrix(c("gene 1","gene 4","gene 4","gene 2","gene 3","gene 3"),
+int.1 <- matrix(c("gene 1","gene 1", "gene 2", "gene 3"),ncol=2)
+colnames(int.1) <- c("cluster 1","cluster 2" )
+int.2 <- matrix(c("gene 1","gene 4","gene 4","gene 2","gene 3","gene 3"),
 ncol=2)
-colnames(int.2) = c("cluster 1","cluster 3" )
-signal = list(int.1,int.2)
-names(signal) = c("1-2","1-3")
+colnames(int.2) <- c("cluster 1","cluster 3" )
+signal <- list(int.1,int.2)
+names(signal) <- c("1-2","1-3")
 visualize_interactions(signal)
 }

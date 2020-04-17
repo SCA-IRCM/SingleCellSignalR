@@ -77,9 +77,9 @@ types. This virtual cluster is named "undefined". (4) A table associating
 each cell type to a cluster number in the cluster vector.
 }
 \examples{
-data = matrix(runif(1000,0,1),nrow=50,ncol=20)
-rownames(data) = paste("gene",seq_len(50))
-markers = matrix(paste("gene",seq_len(10)),ncol=5,nrow=2)
-colnames(markers)=paste("type",seq_len(5))
+data <- matrix(runif(1000,0,1),nrow=50,ncol=20)
+rownames(data) <- paste("gene",seq_len(50))
+markers <- matrix(paste("gene",seq_len(10)),ncol=5,nrow=2)
+colnames(markers) <- paste("type",seq_len(5))
 cell_classifier(data,rownames(data),markers)
 }

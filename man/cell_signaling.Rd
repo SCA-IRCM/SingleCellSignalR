@@ -114,7 +114,7 @@ would work but "specific" interactions would not be annotated as such.
 }
 \examples{
 data=matrix(runif(1000,0,1),nrow=5,ncol=200)
-rownames(data) = c("A2M","LRP1","AANAT","MTNR1A","ACE")
+rownames(data) <- c("A2M","LRP1","AANAT","MTNR1A","ACE")
 cluster=c(rep(1,100),rep(2,100))
 cell_signaling(data,rownames(data),cluster,int.type="paracrine",write=FALSE)
 }

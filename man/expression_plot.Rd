@@ -37,10 +37,10 @@ number of columns of *data* (i.e. the two first components of a PCA).
 "heat" are the color palettes provided in R.
 }
 \examples{
-data = matrix(runif(5,0,1),ncol=5)
-data[2] = data[5] = 0
-rownames(data) = "gene 1"
-tsne = matrix(runif(10,0,1),ncol=2)
+data <- matrix(runif(5,0,1),ncol=5)
+data[2] <- data[5] <- 0
+rownames(data) <- "gene 1"
+tsne <- matrix(runif(10,0,1),ncol=2)
 expression_plot(data,"gene 1",tsne)
 
 }

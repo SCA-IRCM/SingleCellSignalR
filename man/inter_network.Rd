@@ -70,10 +70,10 @@ network for each cell cluster named "intracell_network_Z.txt" and
 "intracell_network_Z.graphml", where Z is the *c.names* of the cluster.
 }
 \examples{
-m = data.frame(cell.1=runif(10,0,2),cell.2=runif(10,0,2),cell.3=runif(10,0,2),
-cell.4=runif(10,0,2),cell.5=runif(10,0,2),cell.6=runif(10,0,2),cell.7=
+m <- data.frame(cell.1=runif(10,0,2),cell.2=runif(10,0,2),cell.3=runif(10,0,2),
+cell.4 <- runif(10,0,2),cell.5=runif(10,0,2),cell.6=runif(10,0,2),cell.7=
 runif(10,0,2))
-rownames(m) = paste("gene", seq_len(10))
-cluster = c(1,1,1,2,3,3,2)
+rownames(m) <- paste("gene", seq_len(10))
+cluster <- c(1,1,1,2,3,3,2)
 inter_network(m,rownames(m),cluster,signal=NULL)
 }

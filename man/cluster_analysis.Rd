@@ -88,7 +88,7 @@ upfront.
 }
 \examples{
 data=matrix(runif(1000,0,1),nrow=5,ncol=200)
-rownames(data) = c("A2M","LRP1","AANAT","MTNR1A","ACE")
+rownames(data) <- c("A2M","LRP1","AANAT","MTNR1A","ACE")
 cluster=c(rep(1,100),rep(2,100))
 cluster_analysis(data,rownames(data),cluster,dif.exp=FALSE)
 }

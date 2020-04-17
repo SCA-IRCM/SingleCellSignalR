@@ -36,8 +36,8 @@ Displays a heatmap showing the most variable interactions over
 all clusters.
 }
 \examples{
-data=matrix(runif(1000,0,1),nrow=5,ncol=200)
-genes = c("gene 1","gene 2","gene 3","gene 4","gene 5")
-cluster=c(rep(1,100),rep(2,100))
+data <- matrix(runif(1000,0,1),nrow=5,ncol=200)
+genes <- c("gene 1","gene 2","gene 3","gene 4","gene 5")
+cluster <- c(rep(1,100),rep(2,100))
 mv_interactions(data,genes,cluster)
 }

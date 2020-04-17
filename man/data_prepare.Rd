@@ -63,5 +63,5 @@ genes vector written in the *genes.txt* file is equal to the number of rows
 of the table of read counts written in the *data.txt* file.
 }
 \examples{
-data = data_prepare(file = "./inst/scRNAseq_dataset.txt")
+data <- data_prepare(file="./inst/scRNAseq_dataset.txt")
 }

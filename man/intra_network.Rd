@@ -91,8 +91,8 @@ folder containing the information about the pathways in which the interactions
 are in, named "intracell_network_pathway_analysis_coi-receptors.txt".
 }
 \examples{
-data=matrix(runif(1000,0,1),nrow=5,ncol=200)
-genes = c("A2M","LRP1","AANAT","MTNR1A","ACE")
-cluster=c(rep(1,100),rep(2,100))
+data <- matrix(runif(1000,0,1),nrow=5,ncol=200)
+genes <- c("A2M","LRP1","AANAT","MTNR1A","ACE")
+cluster <- c(rep(1,100),rep(2,100))
 intra_network(goi=c("TGFBR1","ERBB2"),data,genes,cluster,coi="T-cells")
 }

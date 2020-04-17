@@ -61,7 +61,7 @@
 #' data <- matrix(runif(1000,0,1),nrow=50,ncol=20)
 #' rownames(data) <- paste("gene",seq_len(50))
 #' markers <- matrix(paste("gene",seq_len(10)),ncol=5,nrow=2)
-#' colnames(markers)=paste("type",seq_len(5))
+#' colnames(markers) <- paste("type",seq_len(5))
 #' cell_classifier(data,rownames(data),markers)
 cell_classifier <- function(data,genes,markers=markers_default,tsne=NULL,
                            plot.details=FALSE,write=TRUE,verbose=TRUE){
@@ -93,7 +93,7 @@ cell_classifier <- function(data,genes,markers=markers_default,tsne=NULL,
   l <- matrix(0,101,2)
   q <- 0
   for (n in seq(0.01,1,0.01)){
-    q <- +1
+    q <- q+1
     f <- final
     f[f<n] <- 0
     l[q+1,1] <- n
