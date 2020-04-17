@@ -46,13 +46,13 @@
 #' @import data.table
 #'
 #' @examples
-#'m = data.frame(cell.1=runif(10,0,2),cell.2=runif(10,0,2),cell.3=runif(10,0,2),
-#'cell.4=runif(10,0,2),cell.5=runif(10,0,2),cell.6=runif(10,0,2),cell.7=
+#'m <- data.frame(cell.1=runif(10,0,2),cell.2=runif(10,0,2),cell.3=runif(10,0,2),
+#'cell.4 <- runif(10,0,2),cell.5=runif(10,0,2),cell.6=runif(10,0,2),cell.7=
 #'runif(10,0,2))
-#'rownames(m) = paste("gene", seq_len(10))
-#'cluster = c(1,1,1,2,3,3,2)
+#'rownames(m) <- paste("gene", seq_len(10))
+#'cluster <- c(1,1,1,2,3,3,2)
 #'inter_network(m,rownames(m),cluster,signal=NULL)
-inter_network = function(data,genes,cluster,signal,c.names=NULL,
+inter_network <- function(data,genes,cluster,signal,c.names=NULL,
                          species=c("homo sapiens","mus musculus"),
                          write=TRUE,plot=FALSE,verbose=TRUE){
   if (dir.exists("networks")==FALSE & write==TRUE){
@@ -62,7 +62,7 @@ inter_network = function(data,genes,cluster,signal,c.names=NULL,
     c.names <- paste("cluster",seq_len(max(cluster)))
   }
   if (min(cluster)!=1){
-    cluster = cluster + 1 - min(cluster)
+    cluster <- cluster + 1 - min(cluster)
   }
   if (length(c.names)!=max(cluster) | sum(duplicated(c.names))>0 |
       grepl("/",paste(c.names,collapse =""))){
@@ -88,7 +88,7 @@ inter_network = function(data,genes,cluster,signal,c.names=NULL,
   }
 
   # Interface networks ========================================================
-  tmp <-  vector("list",length = length(signal))
+  tmp <-  vector("list",length=length(signal))
   if (is.null(signal)==FALSE){
     for (i in seq_len(length(signal))){
       ci <-  signal[[i]]
@@ -99,7 +99,7 @@ inter_network = function(data,genes,cluster,signal,c.names=NULL,
                  receptor.name=ci[[2]],origin=from,destination=to,ci[,3:4],
                  stringsAsFactors=FALSE)
     }
-    cellint = do.call("rbind",tmp)
+    cellint <- do.call("rbind",tmp)
 
     # Pair networks ----------------
     m <- 0
@@ -159,7 +159,7 @@ inter_network = function(data,genes,cluster,signal,c.names=NULL,
       }
       cat(' OK', fill=TRUE)
     }
-    names(interface) = n.int
+    names(interface) <- n.int
 
 
     # Full network ----------------
@@ -195,26 +195,26 @@ inter_network = function(data,genes,cluster,signal,c.names=NULL,
                   format="graphml")
     }
     if (plot==TRUE){
-      g.plot = graph_from_data_frame(cellint,directed = FALSE)
-      tmp = do.call(rbind,strsplit(unique(c(cellint$ligand,cellint$receptor)),split = ".",fixed = TRUE))
-      cr = rainbow(max(cluster))
-      names(cr) = c.names
-      V(g.plot)$vertex.label = do.call(rbind,strsplit(unique(c(cellint$ligand,cellint$receptor)),split = ".",fixed = TRUE))[,2]
-      V(g.plot)$label.color = "black"
-      V(g.plot)$color = cr[tmp[,1]]
-      V(g.plot)$shape = c("circle")
-      V(g.plot)$shape[unique(c(cellint$ligand,cellint$receptor)) %in% cellint$receptor] = c("square")
-      V(g.plot)$size = 10
-      E(g.plot)$width = cellint$LRscore*4
-      E(g.plot)$color = "gray30"
+      g.plot <- graph_from_data_frame(cellint,directed=FALSE)
+      tmp <- do.call(rbind,strsplit(unique(c(cellint$ligand,cellint$receptor)),split=".",fixed=TRUE))
+      cr <- rainbow(max(cluster))
+      names(cr) <- c.names
+      V(g.plot)$vertex.label <- do.call(rbind,strsplit(unique(c(cellint$ligand,cellint$receptor)),split=".",fixed=TRUE))[,2]
+      V(g.plot)$label.color <- "black"
+      V(g.plot)$color <- cr[tmp[,1]]
+      V(g.plot)$shape <- c("circle")
+      V(g.plot)$shape[unique(c(cellint$ligand,cellint$receptor)) %in% cellint$receptor] <- c("square")
+      V(g.plot)$size <- 10
+      E(g.plot)$width <- cellint$LRscore*4
+      E(g.plot)$color <- "gray30"
 
-      plot(g.plot,vertex.label=V(g.plot)$vertex.label,main = "Intercellular communication network")
-      legend("bottomleft",legend = c.names,fill = cr)
-      legend("topleft",legend = c("ligand","receptor"),pch=c(1,0))
+      plot(g.plot,vertex.label=V(g.plot)$vertex.label,main="Intercellular communication network")
+      legend("bottomleft",legend=c.names,fill=cr)
+      legend("topleft",legend=c("ligand","receptor"),pch=c(1,0))
     }
   }
-  res = list(interface,cellint[,c(1,2,7,8)])
-  names(res) = c("individual-networks","full-network")
+  res <- list(interface,cellint[,c(1,2,7,8)])
+  names(res) <- c("individual-networks","full-network")
   return(res)
 }
 

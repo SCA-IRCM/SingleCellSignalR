@@ -44,18 +44,18 @@
 #'
 #'
 #' @examples
-#' data = data_prepare(file = "./inst/scRNAseq_dataset.txt")
-data_prepare = function(file, most.variables=0, lower=0, upper=0,normalize=TRUE,write=FALSE,verbose=TRUE, plot=FALSE){
+#' data <- data_prepare(file="./inst/scRNAseq_dataset.txt")
+data_prepare <- function(file, most.variables=0, lower=0, upper=0,normalize=TRUE,write=FALSE,verbose=TRUE, plot=FALSE){
 
   if (dir.exists("data")==FALSE & write==TRUE){
     dir.create("data")
   }
   if (!file.exists(file)){
-    cat(paste(file,"doesn't exist."),fill = TRUE)
+    cat(paste(file,"doesn't exist."),fill=TRUE)
     return()
   }
 
-  data = fread(file,data.table = FALSE)
+  data <- fread(file,data.table=FALSE)
 
   for (i in seq_len(ncol(data))){
     if (is.character(data[,i])==FALSE){
@@ -68,19 +68,19 @@ data_prepare = function(file, most.variables=0, lower=0, upper=0,normalize=TRUE,
         gene symbols",fill=TRUE)
     return()
   }
-  data = subset(data, !duplicated(data[,p]))
-  genes = data[,p]
-  data = data[,-c(seq_len(p))]
-  rownames(data) = genes
-  data = data[rowSums(data)>0,]
-  data = data.frame(data[,apply(data,2,function(x) quantile(x,0.99))>0])
+  data <- subset(data, !duplicated(data[,p]))
+  genes <- data[,p]
+  data <- data[,-c(seq_len(p))]
+  rownames(data) <- genes
+  data <- data[rowSums(data)>0,]
+  data <- data.frame(data[,apply(data,2,function(x) quantile(x,0.99))>0])
   if (normalize==TRUE){
     cat("log-Normalization",fill=TRUE)
-    q = apply(data,2,quantile,0.99)
-    data = log(1+sweep(data,2,q/median(q),"/"))
+    q <- apply(data,2,quantile,0.99)
+    data <- log(1+sweep(data,2,q/median(q),"/"))
   }
-  data = data[rowSums(data)>0,]
-  data = data[rowSums(data)<=quantile(rowSums(data),1-upper) &
+  data <- data[rowSums(data)>0,]
+  data <- data[rowSums(data)<=quantile(rowSums(data),1-upper) &
                 rowSums(data)>=quantile(rowSums(data),lower),]
 
   if (verbose==TRUE){
@@ -93,20 +93,20 @@ data_prepare = function(file, most.variables=0, lower=0, upper=0,normalize=TRUE,
     fwrite(data.frame(rownames(data)),"./data/genes.txt",sep="\t")
   }
   if (most.variables!=0){
-    m = apply(data,1,mean)
-    cv = apply(data,1,sd)/m
-    names(cv) = rownames(data)
-    cv = cv[m>quantile(m,0.5)]
+    m <- apply(data,1,mean)
+    cv <- apply(data,1,sd)/m
+    names(cv) <- rownames(data)
+    cv <- cv[m>quantile(m,0.5)]
     if (length(cv)<most.variables){
-      mv.genes = names(cv)
+      mv.genes <- names(cv)
     } else {
-      mv.genes = names(sort(cv,decreasing = TRUE))[seq_len(most.variables)]
+      mv.genes <- names(sort(cv,decreasing=TRUE))[seq_len(most.variables)]
     }
-    mv.genes = names(sort(cv,decreasing = TRUE))[seq_len(most.variables)]
-    res = list(data,data[mv.genes,])
-    names(res) = c("complete.dataset","most.var.dataset")
+    mv.genes <- names(sort(cv,decreasing=TRUE))[seq_len(most.variables)]
+    res <- list(data,data[mv.genes,])
+    names(res) <- c("complete.dataset","most.var.dataset")
   } else {
-    res = data
+    res <- data
   }
   return(res)
 }

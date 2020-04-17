@@ -86,10 +86,10 @@
 #'
 #' @examples
 #' data=matrix(runif(1000,0,1),nrow=5,ncol=200)
-#' rownames(data) = c("A2M","LRP1","AANAT","MTNR1A","ACE")
+#' rownames(data) <- c("A2M","LRP1","AANAT","MTNR1A","ACE")
 #' cluster=c(rep(1,100),rep(2,100))
 #' cell_signaling(data,rownames(data),cluster,int.type="paracrine",write=FALSE)
-cell_signaling = function(data, genes,
+cell_signaling <- function(data, genes,
                           cluster,int.type=c("paracrine","autocrine"),
                           c.names=NULL,s.score=0.5,logFC=log2(1.5),
                           species=c("homo sapiens","mus musculus"),
@@ -98,10 +98,10 @@ cell_signaling = function(data, genes,
     dir.create("cell-signaling")
   }
   if (is.null(c.names)==TRUE){
-    c.names = paste("cluster",seq_len(max(cluster)))
+    c.names <- paste("cluster",seq_len(max(cluster)))
   }
   if (min(cluster)!=1){
-    cluster = cluster + 1 - min(cluster)
+    cluster <- cluster + 1 - min(cluster)
   }
   if (length(c.names)!=max(cluster) | sum(duplicated(c.names))>0 |
       grepl("/",paste(c.names,collapse =""))){
@@ -110,26 +110,26 @@ cell_signaling = function(data, genes,
         special characters",fill=TRUE)
     return()
   }
-  int.type = match.arg(int.type)
-  species = match.arg(species)
+  int.type <- match.arg(int.type)
+  species <- match.arg(species)
 
-  rownames(data) = genes
-  z = seq_len(max(cluster))
-  lig = unique(LRdb$ligand)
-  rec = unique(LRdb$receptor)
-  data = data.frame(data)
-  data = data[rowSums(data)>0,]
-  med = sum(data)/(nrow(data)*ncol(data))
+  rownames(data) <- genes
+  z <- seq_len(max(cluster))
+  lig <- unique(LRdb$ligand)
+  rec <- unique(LRdb$receptor)
+  data <- data.frame(data)
+  data <- data[rowSums(data)>0,]
+  med <- sum(data)/(nrow(data)*ncol(data))
 
   if (species=='mus musculus'){
-    Hs2mm = mm2Hs[,1]
-    mm2Hs = mm2Hs[,2]
-    names(mm2Hs) = as.character(Hs2mm)
-    names(Hs2mm) = as.character(mm2Hs)
-    m.names = mm2Hs[rownames(data)]
-    data = subset(data,(!is.na(m.names)))
-    m.names = m.names[!is.na(m.names)]
-    rownames(data)=as.character(m.names)
+    Hs2mm <- mm2Hs[,1]
+    mm2Hs <- mm2Hs[,2]
+    names(mm2Hs) <- as.character(Hs2mm)
+    names(Hs2mm) <- as.character(mm2Hs)
+    m.names <- mm2Hs[rownames(data)]
+    data <- subset(data,(!is.na(m.names)))
+    m.names <- m.names[!is.na(m.names)]
+    rownames(data) <- as.character(m.names)
   }
 
 
@@ -138,7 +138,7 @@ cell_signaling = function(data, genes,
     if (verbose==TRUE){
       cat("Autocrine signaling: ",fill=TRUE)
     }
-    auto = list()
+    auto <- list()
     k=0
     int=NULL
     n.int=NULL
@@ -146,63 +146,63 @@ cell_signaling = function(data, genes,
       cat("Checking for cell/cell signaling:",fill=TRUE)
     }
     for (i in z){
-      tmp = data[,cluster==i]
-      tmp = tmp[rowSums(tmp)>0,]
+      tmp <- data[,cluster==i]
+      tmp <- tmp[rowSums(tmp)>0,]
       if (sum(is.element(lig, rownames(tmp)))>0){
-        lig.tmp = rownames(tmp)[is.element(rownames(tmp),lig)]
-        #lig.tmp = lig.tmp[!is.element(lig.tmp,gene.list[[i]])]
+        lig.tmp <- rownames(tmp)[is.element(rownames(tmp),lig)]
+        #lig.tmp <- lig.tmp[!is.element(lig.tmp,gene.list[[i]])]
       } else {lig.tmp=NULL}
 
-      final.tmp = LRdb[is.element(LRdb$ligand,lig.tmp),seq_len(2)]
-      final.tmp = data.frame(final.tmp,as.character(
+      final.tmp <- LRdb[is.element(LRdb$ligand,lig.tmp),seq_len(2)]
+      final.tmp <- data.frame(final.tmp,as.character(
         rep("autocrine|paracrine",sum(is.element(LRdb$ligand,lig.tmp)))))
-      m.lig = rowSums(tmp[unique(final.tmp[,1]),])/sum(cluster==i)
-      names(m.lig) = unique(final.tmp[,1])
+      m.lig <- rowSums(tmp[unique(final.tmp[,1]),])/sum(cluster==i)
+      names(m.lig) <- unique(final.tmp[,1])
 
       if (sum(is.element(rec, rownames(tmp)))>0){
-        rec.tmp = rownames(tmp)[is.element(rownames(tmp[apply(
+        rec.tmp <- rownames(tmp)[is.element(rownames(tmp[apply(
           tmp,1,function(x) sum(x>0))>tol*ncol(tmp),]),rec)]
       } else {rec.tmp=NULL}
 
       for (j in z){
-        temp = data[,cluster==j]
-        temp = temp[rowSums(temp)>0,]
+        temp <- data[,cluster==j]
+        temp <- temp[rowSums(temp)>0,]
         if (sum(is.element(rec, rownames(temp)))>0){
-          rec.temp = rownames(temp)[is.element(rownames(temp),rec)]
-          #rec.temp = rec.temp[!is.element(rec.temp,gene.list[[j]])]
+          rec.temp <- rownames(temp)[is.element(rownames(temp),rec)]
+          #rec.temp <- rec.temp[!is.element(rec.temp,gene.list[[j]])]
         } else {rec.temp=NULL}
-        rec.temp = rec.temp[is.element(rec.temp,rec.tmp)]
-        m.rec = rowSums(data.frame(temp[rec.temp,]))/sum(cluster==j)
-        names(m.rec) = rec.temp
+        rec.temp <- rec.temp[is.element(rec.temp,rec.tmp)]
+        m.rec <- rowSums(data.frame(temp[rec.temp,]))/sum(cluster==j)
+        names(m.rec) <- rec.temp
 
-        final = final.tmp[is.element(final.tmp$receptor,rec.temp),]
-        final = cbind(final,LRscore(m.lig[final$ligand],m.rec[final$receptor],
+        final <- final.tmp[is.element(final.tmp$receptor,rec.temp),]
+        final <- cbind(final,LRscore(m.lig[final$ligand],m.rec[final$receptor],
                                   med))
 
-        colnames(final) = c(c.names[i],c.names[j],"interaction type","LRscore")
+        colnames(final) <- c(c.names[i],c.names[j],"interaction type","LRscore")
 
         if (i==j){
           final$`interaction type`="autocrine"
         }
 
-        final = final[final[,4]>s.score,]
-        final = final[order(final[,4],decreasing = TRUE),]
+        final <- final[final[,4]>s.score,]
+        final <- final[order(final[,4],decreasing=TRUE),]
 
         if (species=="mus musculus"){
-          final[,1] = Hs2mm[as.character(final[,1])]
-          final[,2] = Hs2mm[as.character(final[,2])]
+          final[,1] <- Hs2mm[as.character(final[,1])]
+          final[,2] <- Hs2mm[as.character(final[,2])]
         }
 
         if (nrow(final)>0){
-          k=k+1
-          auto[[k]] = final
+          k <- k+1
+          auto[[k]] <- final
           if (verbose==TRUE){
             cat(paste(nrow(final),"interactions from",c.names[i],
                       "to",c.names[j]),fill=TRUE)
           }
-          int = c(int,paste(i,"-",j,sep=""))
-          n.int = c(n.int,paste(c.names[i],"-",c.names[j],sep=""))
-          gr = graph_from_data_frame(final,directed=FALSE)
+          int <- c(int,paste(i,"-",j,sep=""))
+          n.int <- c(n.int,paste(c.names[i],"-",c.names[j],sep=""))
+          gr <- graph_from_data_frame(final,directed=FALSE)
           if (write==TRUE){
             fwrite(data.frame(final),paste("./cell-signaling/LR_interactions_",
                                            c.names[i],"-",c.names[j],"-",
@@ -212,26 +212,26 @@ cell_signaling = function(data, genes,
       }
     }
     if (k!=0){
-      names(auto) = n.int
+      names(auto) <- n.int
     }
   }
 
 
   ## Paracrine -------------------
   if (int.type=="paracrine"){
-    gene.list = vector("list",max(cluster))
+    gene.list <- vector("list",max(cluster))
     for (i in z){
       if (file.exists(paste("./cluster-analysis/table_dge_",c.names[i],
                             ".txt",sep=""))==TRUE){
-        resu = fread(paste("./cluster-analysis/table_dge_",c.names[i],
-                           ".txt",sep=""),data.table = FALSE)
-        gene.list[[i]] = resu$genes[resu$logFC>logFC]
+        resu <- fread(paste("./cluster-analysis/table_dge_",c.names[i],
+                           ".txt",sep=""),data.table=FALSE)
+        gene.list[[i]] <- resu$genes[resu$logFC>logFC]
         if (species == "mus musculus"){
-          gene.list[[i]] = mm2Hs[gene.list[[i]]]
+          gene.list[[i]] <- mm2Hs[gene.list[[i]]]
         }
-        gene.list[[i]] = gene.list[[i]][!is.na(gene.list[[i]])]
+        gene.list[[i]] <- gene.list[[i]][!is.na(gene.list[[i]])]
       } else {
-        gene.list[[i]] = "none"
+        gene.list[[i]] <- "none"
         cat(paste("No such file as table_dge_",c.names[i],
                   ".txt in the cluster-analysis folder", sep=""),fill=TRUE)
       }
@@ -240,7 +240,7 @@ cell_signaling = function(data, genes,
     if (verbose==TRUE){
       cat("Paracrine signaling: ",fill=TRUE)
     }
-    para = list()
+    para <- list()
     k=0
     int=NULL
     n.int=NULL
@@ -249,70 +249,70 @@ cell_signaling = function(data, genes,
     }
     for (i in z){
       if (sum(cluster==i)>1){
-        tmp = data[,cluster==i]
-        tmp = tmp[rowSums(tmp)>0,]
+        tmp <- data[,cluster==i]
+        tmp <- tmp[rowSums(tmp)>0,]
         if (sum(is.element(lig, rownames(tmp)))>0){
-          lig.tmp = rownames(tmp)[is.element(rownames(tmp),lig)]
-          #lig.tmp = lig.tmp[!is.element(lig.tmp,gene.list[[i]])]
+          lig.tmp <- rownames(tmp)[is.element(rownames(tmp),lig)]
+          #lig.tmp <- lig.tmp[!is.element(lig.tmp,gene.list[[i]])]
         } else {lig.tmp=NULL}
 
-        final.tmp = LRdb[is.element(LRdb$ligand,lig.tmp),seq_len(2)]
-        final.tmp = data.frame(final.tmp,as.character(
+        final.tmp <- LRdb[is.element(LRdb$ligand,lig.tmp),seq_len(2)]
+        final.tmp <- data.frame(final.tmp,as.character(
           rep("paracrine",sum(is.element(LRdb$ligand,lig.tmp)))),
-          stringsAsFactors = FALSE)
-        m.lig = rowSums(tmp[unique(final.tmp[,1]),])/sum(cluster==i)
-        names(m.lig) = unique(final.tmp[,1])
+          stringsAsFactors=FALSE)
+        m.lig <- rowSums(tmp[unique(final.tmp[,1]),])/sum(cluster==i)
+        names(m.lig) <- unique(final.tmp[,1])
 
         if (sum(is.element(rec, rownames(tmp)))>0){
-          rec.tmp = rownames(tmp)[is.element(rownames(tmp[
+          rec.tmp <- rownames(tmp)[is.element(rownames(tmp[
             apply(tmp,1,function(x) sum(x>0))>tol*ncol(tmp),]),rec)]
         } else {rec.tmp=NULL}
 
         for (j in z[-i]){
           if (sum(cluster==j)>1){
-            temp = data[,cluster==j]
-            temp = temp[rowSums(temp)>0,]
+            temp <- data[,cluster==j]
+            temp <- temp[rowSums(temp)>0,]
             if (sum(is.element(rec, rownames(temp)))>0){
-              rec.temp = rownames(temp)[is.element(rownames(temp),rec)]
-              #rec.temp = rec.temp[!is.element(rec.temp,gene.list[[j]])]
+              rec.temp <- rownames(temp)[is.element(rownames(temp),rec)]
+              #rec.temp <- rec.temp[!is.element(rec.temp,gene.list[[j]])]
             } else {rec.temp=NULL}
-            rec.temp = rec.temp[!is.element(rec.temp,rec.tmp)]
-            m.rec = rowSums(data.frame(temp[rec.temp,]))/sum(cluster==j)
-            names(m.rec) = rec.temp
+            rec.temp <- rec.temp[!is.element(rec.temp,rec.tmp)]
+            m.rec <- rowSums(data.frame(temp[rec.temp,]))/sum(cluster==j)
+            names(m.rec) <- rec.temp
 
-            final = final.tmp[is.element(final.tmp$receptor,rec.temp),]
-            final = cbind(final,LRscore(m.lig[final$ligand],m.rec[final$receptor],
+            final <- final.tmp[is.element(final.tmp$receptor,rec.temp),]
+            final <- cbind(final,LRscore(m.lig[final$ligand],m.rec[final$receptor],
                                       med))
-            exclus = final$ligand %in% gene.list[[i]] & final$receptor %in%
+            exclus <- final$ligand %in% gene.list[[i]] & final$receptor %in%
               gene.list[[j]]
             if (sum(exclus)!=0){
-              f.exclu = final[exclus,]
-              final = final[!(final$ligand %in% gene.list[[i]] & final$receptor
+              f.exclu <- final[exclus,]
+              final <- final[!(final$ligand %in% gene.list[[i]] & final$receptor
                               %in% gene.list[[j]]),]
-              f.exclu[,3] = "specific"
-              final = rbind(f.exclu,final)
+              f.exclu[,3] <- "specific"
+              final <- rbind(f.exclu,final)
             }
 
-            colnames(final) = c(c.names[i],c.names[j],"interaction type",
+            colnames(final) <- c(c.names[i],c.names[j],"interaction type",
                                 "LRscore")
-            final = final[final[,4]>s.score,]
-            final = final[order(final[,4],decreasing = TRUE),]
+            final <- final[final[,4]>s.score,]
+            final <- final[order(final[,4],decreasing=TRUE),]
 
             if (species=="mus musculus"){
-              final[,1] = Hs2mm[as.character(final[,1])]
-              final[,2] = Hs2mm[as.character(final[,2])]
+              final[,1] <- Hs2mm[as.character(final[,1])]
+              final[,2] <- Hs2mm[as.character(final[,2])]
             }
 
             if (nrow(final)>0){
               k=k+1
-              para[[k]] = final
+              para[[k]] <- final
               if (verbose==TRUE){
                 cat(paste(nrow(final),"interactions from",c.names[i],"to",
                           c.names[j]),fill=TRUE)
               }
-              int = c(int,paste(i,"-",j,sep=""))
-              n.int = c(n.int,paste(c.names[i],"-",c.names[j],sep=""))
-              gr = graph_from_data_frame(final,directed=FALSE)
+              int <- c(int,paste(i,"-",j,sep=""))
+              n.int <- c(n.int,paste(c.names[i],"-",c.names[j],sep=""))
+              gr <- graph_from_data_frame(final,directed=FALSE)
               if (write==TRUE){
                 fwrite(data.frame(final),paste(
                   "./cell-signaling/LR_interactions_",c.names[i],"-",c.names[j],
@@ -329,7 +329,7 @@ cell_signaling = function(data, genes,
       }
     }
     if (k!=0){
-      names(para) = n.int
+      names(para) <- n.int
     }
   }
 
@@ -361,7 +361,7 @@ cell_signaling = function(data, genes,
 #' r=9
 #' s=5
 #' LRscore(l,r,s)
-LRscore = function(l,r,s){
+LRscore <- function(l,r,s){
   L=l^(1/2)
   R=r^(1/2)
   S=s
