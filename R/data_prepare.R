@@ -44,8 +44,8 @@
 #'
 #'
 #' @examples
-#' data = data_prepare(file = "~/scRNAseq_dataset.txt",write = FALSE)
-data_prepare = function(file, most.variables=0, lower=0, upper=0,normalize=TRUE,write=TRUE,verbose=TRUE, plot=FALSE){
+#' data = data_prepare(file = "./inst/scRNAseq_dataset.txt")
+data_prepare = function(file, most.variables=0, lower=0, upper=0,normalize=TRUE,write=FALSE,verbose=TRUE, plot=FALSE){
 
   if (dir.exists("data")==FALSE & write==TRUE){
     dir.create("data")
@@ -80,8 +80,8 @@ data_prepare = function(file, most.variables=0, lower=0, upper=0,normalize=TRUE,
     data = log(1+sweep(data,2,q/median(q),"/"))
   }
   data = data[rowSums(data)>0,]
-  data = data[rowSums(data)<quantile(rowSums(data),1-upper) &
-                rowSums(data)>quantile(rowSums(data),lower),]
+  data = data[rowSums(data)<=quantile(rowSums(data),1-upper) &
+                rowSums(data)>=quantile(rowSums(data),lower),]
 
   if (verbose==TRUE){
     cat(paste(dim(data)[1],"genes"),fill=TRUE)
