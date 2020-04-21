@@ -75,8 +75,7 @@ cell_classifier <- function(data,genes,markers=markers_default,tsne=NULL,
                                              genes],]
 
   if (is.null(dim(tmp))==TRUE){
-    cat("Not enough markers genes to pursue the cell classification",fill=TRUE)
-    return()
+    stop("Not enough markers genes to pursue the cell classification")
   }
   final <- matrix(0,ncol=ncol(tmp),nrow=(ncol(markers)))
 

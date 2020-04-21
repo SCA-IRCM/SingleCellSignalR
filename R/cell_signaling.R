@@ -105,10 +105,9 @@ cell_signaling <- function(data, genes,
   }
   if (length(c.names)!=max(cluster) | sum(duplicated(c.names))>0 |
       grepl("/",paste(c.names,collapse =""))){
-    cat("The length of c.names must be equal to the number of clusters
+    stop("The length of c.names must be equal to the number of clusters
         and must contain no duplicates. The cluster names must not include
-        special characters",fill=TRUE)
-    return()
+        special characters")
   }
   int.type <- match.arg(int.type)
   species <- match.arg(species)

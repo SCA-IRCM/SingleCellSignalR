@@ -79,16 +79,13 @@ intra_network <- function(goi,data,genes,cluster,coi,cell.prop=0.2,c.names=NULL,
   }
   if (length(c.names)!=max(cluster) | sum(duplicated(c.names))>0 |
       grepl("/",paste(c.names,collapse =""))){
-    cat("The length of c.names must be equal to the number of clusters and must
+    stop("The length of c.names must be equal to the number of clusters and must
         contain no duplicates. The cluster names must not include special
-        characters",fill=TRUE)
-    return()
+        characters")
   }
   if (!is.element(coi,c.names)){
-    cat(paste(coi,"must be included in c.names"),fill=TRUE)
-    cat("If c.names is not provided, it is set to cluster 1, cluster 2, ...,
-        cluster N. WIth N the maximum number of clusters",fill=TRUE)
-    return()
+    stop(paste(coi,"must be included in c.names.","If c.names is not provided, it is set to cluster 1, cluster 2, ...,
+        cluster N. WIth N the maximum number of clusters"))
   }
   opar <- par()
   species <- match.arg(species)

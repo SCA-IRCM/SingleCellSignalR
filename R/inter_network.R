@@ -66,10 +66,9 @@ inter_network <- function(data,genes,cluster,signal,c.names=NULL,
   }
   if (length(c.names)!=max(cluster) | sum(duplicated(c.names))>0 |
       grepl("/",paste(c.names,collapse =""))){
-    cat("The length of c.names must be equal to the number of clusters and
+    stop("The length of c.names must be equal to the number of clusters and
         must contain no duplicates. The cluster names must not include special
-        characters",fill=TRUE)
-    return()
+        characters")
   }
   cellint=NULL
   rownames(data) <- genes

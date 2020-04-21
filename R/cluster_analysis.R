@@ -80,10 +80,9 @@ cluster_analysis <- function(data,genes,cluster,c.names=NULL,dif.exp=TRUE,
   }
   if (length(c.names)!=max(cluster) | sum(duplicated(c.names))>0 |
       grepl("/",paste(c.names,collapse =""))){
-    cat("The length of c.names must be equal to the number of
+    stop("The length of c.names must be equal to the number of
         clusters and must contain no duplicates. The cluster names must not
         include special characters")
-    return()
   }
   rownames(data) <- genes
   n.cluster <- max(cluster)

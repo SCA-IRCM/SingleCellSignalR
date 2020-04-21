@@ -44,15 +44,15 @@
 #'
 #'
 #' @examples
-#' data <- data_prepare(file="./inst/scRNAseq_dataset.txt")
+#' file <- system.file("scRNAseq_dataset.txt",package = "SingleCellSignalR")
+#' data <- data_prepare(file=file)
 data_prepare <- function(file, most.variables=0, lower=0, upper=0,normalize=TRUE,write=FALSE,verbose=TRUE, plot=FALSE){
 
   if (dir.exists("data")==FALSE & write==TRUE){
     dir.create("data")
   }
   if (!file.exists(file)){
-    cat(paste(file,"doesn't exist."),fill=TRUE)
-    return()
+    stop(paste(file,"doesn't exist."))
   }
 
   data <- fread(file,data.table=FALSE)
@@ -64,9 +64,8 @@ data_prepare <- function(file, most.variables=0, lower=0, upper=0,normalize=TRUE
     }
   }
   if (sum(data[,p] %in% c(mm2Hs$`Mouse gene name`,mm2Hs$`Gene name`))==0){
-    cat("Please convert gene ID's (Ensembl or NCBI ID) to official HUGO
-        gene symbols",fill=TRUE)
-    return()
+    stop("Please convert gene ID's (Ensembl or NCBI ID) to official HUGO
+        gene symbols")
   }
   data <- subset(data, !duplicated(data[,p]))
   genes <- data[,p]
