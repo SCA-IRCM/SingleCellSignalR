@@ -305,7 +305,23 @@ intra_network <- function(goi,data,genes,cluster,coi,cell.prop=0.2,c.names=NULL,
         par(mfrow=c(2,1))
         par(las=2)
         par(mar=c(0,0,1,0))
-        plot(g.net, layout=l,main=coi)
+
+        if (species=="mus musculus"){
+          lab = unique(c(net.f$a.gn,net.f$b.gn))
+
+          li = lab[net.f$location=="extra"]
+          li = do.call(rbind,strsplit(li,split = "-"))
+          li[,2] = Hs2mm[li[,2]]
+          li = paste(li[,1],li[,2],sep="-")
+
+          ot = lab[net.f$location!="extra"]
+          ot = Hs2mm[ot]
+
+          plot(g.net, layout=l,main = coi,vertex.label = c(li,ot))
+
+        } else {
+          plot(g.net, layout=l,main = coi)
+        }
 
         if (is.null(pw.table)==FALSE){
           rawp <- pw.table$pval
