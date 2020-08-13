@@ -70,7 +70,7 @@ inter_network <- function(data,genes,cluster,signal,c.names=NULL,
         must contain no duplicates. The cluster names must not include special
         characters")
   }
-  cellint=NULL
+  cellint <- NULL
   rownames(data) <- genes
   interface <- list()
 
