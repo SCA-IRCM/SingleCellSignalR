@@ -145,67 +145,71 @@ cell_signaling <- function(data, genes,
       cat("Checking for cell/cell signaling:",fill=TRUE)
     }
     for (i in z){
-      tmp <- data[,cluster==i]
-      tmp <- tmp[rowSums(tmp)>0,]
-      if (sum(is.element(lig, rownames(tmp)))>0){
-        lig.tmp <- rownames(tmp)[is.element(rownames(tmp),lig)]
-        #lig.tmp <- lig.tmp[!is.element(lig.tmp,gene.list[[i]])]
-      } else {lig.tmp=NULL}
+      if (sum(cluster==i)>1){
+        tmp <- data[,cluster==i]
+        tmp <- tmp[rowSums(tmp)>0,]
+        if (sum(is.element(lig, rownames(tmp)))>0){
+          lig.tmp <- rownames(tmp)[is.element(rownames(tmp),lig)]
+          #lig.tmp <- lig.tmp[!is.element(lig.tmp,gene.list[[i]])]
+        } else {lig.tmp=NULL}
 
-      final.tmp <- LRdb[is.element(LRdb$ligand,lig.tmp),seq_len(2)]
-      final.tmp <- data.frame(final.tmp,as.character(
-        rep("autocrine|paracrine",sum(is.element(LRdb$ligand,lig.tmp)))))
-      m.lig <- rowSums(tmp[unique(final.tmp[,1]),])/sum(cluster==i)
-      names(m.lig) <- unique(final.tmp[,1])
+        final.tmp <- LRdb[is.element(LRdb$ligand,lig.tmp),seq_len(2)]
+        final.tmp <- data.frame(final.tmp,as.character(
+          rep("autocrine|paracrine",sum(is.element(LRdb$ligand,lig.tmp)))))
+        m.lig <- rowSums(tmp[unique(final.tmp[,1]),])/sum(cluster==i)
+        names(m.lig) <- unique(final.tmp[,1])
 
-      if (sum(is.element(rec, rownames(tmp)))>0){
-        rec.tmp <- rownames(tmp)[is.element(rownames(tmp[apply(
-          tmp,1,function(x) sum(x>0))>tol*ncol(tmp),]),rec)]
-      } else {rec.tmp=NULL}
+        if (sum(is.element(rec, rownames(tmp)))>0){
+          rec.tmp <- rownames(tmp)[is.element(rownames(tmp[apply(
+            tmp,1,function(x) sum(x>0))>tol*ncol(tmp),]),rec)]
+        } else {rec.tmp=NULL}
 
-      for (j in z){
-        temp <- data[,cluster==j]
-        temp <- temp[rowSums(temp)>0,]
-        if (sum(is.element(rec, rownames(temp)))>0){
-          rec.temp <- rownames(temp)[is.element(rownames(temp),rec)]
-          #rec.temp <- rec.temp[!is.element(rec.temp,gene.list[[j]])]
-        } else {rec.temp=NULL}
-        rec.temp <- rec.temp[is.element(rec.temp,rec.tmp)]
-        m.rec <- rowSums(data.frame(temp[rec.temp,]))/sum(cluster==j)
-        names(m.rec) <- rec.temp
+        for (j in z){
+          if (sum(cluster==i)>1){
+            temp <- data[,cluster==j]
+            temp <- temp[rowSums(temp)>0,]
+            if (sum(is.element(rec, rownames(temp)))>0){
+              rec.temp <- rownames(temp)[is.element(rownames(temp),rec)]
+              #rec.temp <- rec.temp[!is.element(rec.temp,gene.list[[j]])]
+            } else {rec.temp=NULL}
+            rec.temp <- rec.temp[is.element(rec.temp,rec.tmp)]
+            m.rec <- rowSums(data.frame(temp[rec.temp,]))/sum(cluster==j)
+            names(m.rec) <- rec.temp
 
-        final <- final.tmp[is.element(final.tmp$receptor,rec.temp),]
-        final <- cbind(final,LRscore(m.lig[final$ligand],m.rec[final$receptor],
-                                  med))
+            final <- final.tmp[is.element(final.tmp$receptor,rec.temp),]
+            final <- cbind(final,LRscore(m.lig[final$ligand],m.rec[final$receptor],
+                                      med))
 
-        colnames(final) <- c(c.names[i],c.names[j],"interaction type","LRscore")
+            colnames(final) <- c(c.names[i],c.names[j],"interaction type","LRscore")
 
-        if (i==j){
-          final$`interaction type`="autocrine"
-        }
+            if (i==j){
+              final$`interaction type`="autocrine"
+            }
 
-        final <- final[final[,4]>s.score,]
-        final <- final[order(final[,4],decreasing=TRUE),]
+            final <- final[final[,4]>s.score,]
+            final <- final[order(final[,4],decreasing=TRUE),]
 
-        if (species=="mus musculus"){
-          final[,1] <- Hs2mm[as.character(final[,1])]
-          final[,2] <- Hs2mm[as.character(final[,2])]
-        }
+            if (species=="mus musculus"){
+              final[,1] <- Hs2mm[as.character(final[,1])]
+              final[,2] <- Hs2mm[as.character(final[,2])]
+            }
 
-        if (nrow(final)>0){
-          k <- k+1
-          auto[[k]] <- final
-          if (verbose==TRUE){
-            cat(paste(nrow(final),"interactions from",c.names[i],
-                      "to",c.names[j]),fill=TRUE)
-          }
-          int <- c(int,paste(i,"-",j,sep=""))
-          n.int <- c(n.int,paste(c.names[i],"-",c.names[j],sep=""))
-          gr <- graph_from_data_frame(final,directed=FALSE)
-          if (write==TRUE){
-            fwrite(data.frame(final),paste("./cell-signaling/LR_interactions_",
-                                           c.names[i],"-",c.names[j],"-",
-                                           int.type,".txt",sep=""),sep="\t")
+            if (nrow(final)>0){
+              k <- k+1
+              auto[[k]] <- final
+              if (verbose==TRUE){
+                cat(paste(nrow(final),"interactions from",c.names[i],
+                          "to",c.names[j]),fill=TRUE)
+              }
+              int <- c(int,paste(i,"-",j,sep=""))
+              n.int <- c(n.int,paste(c.names[i],"-",c.names[j],sep=""))
+              gr <- graph_from_data_frame(final,directed=FALSE)
+              if (write==TRUE){
+                fwrite(data.frame(final),paste("./cell-signaling/LR_interactions_",
+                                               c.names[i],"-",c.names[j],"-",
+                                               int.type,".txt",sep=""),sep="\t")
+              }
+            }
           }
         }
       }
