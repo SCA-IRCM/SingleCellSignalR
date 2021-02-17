@@ -1,5 +1,5 @@
 # SingleCellSignalR
- R package for Bioconductor submission 
+ R package 
 
 # ReadMe
-This repository is used for Bioconductor submission, to use **SingleCellSignalR** visit the *SingleCellSignalR_v1* repository
+This repository is used linked to Bioconductor you can download and install **SingleCellSignalR** directly form there: https://bioconductor.org/packages/release/bioc/html/SingleCellSignalR.html
