@@ -27,8 +27,8 @@ Imports:
   utils,
 RoxygenNote: 7.0.2
 Suggests: 
-    SIMLR,
     knitr,
-    rmarkdown
+    rmarkdown,
+    SIMLR
 VignetteBuilder: knitr
 biocViews: SingleCell, Network, Clustering, RNASeq, Classification
