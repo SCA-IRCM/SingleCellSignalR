@@ -15,7 +15,6 @@ Imports:
   gplots,
   grDevices,
   edgeR,
-  SIMLR,
   data.table,
   pheatmap,
   stats,
@@ -28,6 +27,7 @@ Imports:
   utils,
 RoxygenNote: 7.0.2
 Suggests: 
+    SIMLR,
     knitr,
     rmarkdown
 VignetteBuilder: knitr
