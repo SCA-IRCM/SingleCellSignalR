@@ -25,6 +25,10 @@
 #' called "tsne-Y-X.txt", containing the coordinates of each cell in the 2D
 #' t-SNE projection. "X" is the `method` argument anf "Y" is the retained number
 #' of clusters.
+#' 
+#' Note that SIMLR might no longer be available in the most recent versions of R.
+#' It is thus necessary to load the library by yourself before calling this function
+#' if you want to use it (with \code{library(SIMLR)}).
 #'
 #' @param data a data frame of n rows (genes) and m columns (cells) of read or UMI counts (note : rownames(data)=genes)
 #' @param n.cluster a number, an estimation of the ideal number of clusters is computed if equal to 0
