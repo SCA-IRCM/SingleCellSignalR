@@ -1,7 +1,10 @@
 Package: SingleCellSignalR
 Title: Cell Signalling Using Single Cell RNAseq Data Analysis
 Version: 0.99.24
-Authors@R: c(person("Simon", "Cabello-Aguilar", email = "simon.cabello-aguilar@inserm.fr", role = c("aut")), person("Jacques", "Colinge", email = "jacques.colinge@inserm.fr", role = c("cre","aut")))
+Authors@R: c(person("Simon", "Cabello-Aguilar", email = "simon.cabelloaguilar@gmail.com", role = c("aut")), person("Jacques", "Colinge", email = "jacques.colinge@umontpellier.fr", role = c("cre","aut")))
+Author: Simon Cabello-Aguilar Developer [aut],
+        Jacques Colinge Developer [aut, cre]
+Maintainer: Jacques Colinge Developer <jacques.colinge@umontpellier.fr>
 Description: Allows single cell RNA seq data analysis, clustering, creates internal network and infers cell-cell interactions.
 Depends: R (>= 4.0)
 License: GPL-3
@@ -25,10 +28,9 @@ Imports:
   multtest,
   scran,
   utils,
-RoxygenNote: 7.0.2
+RoxygenNote: 7.2.1
 Suggests: 
     knitr,
-    rmarkdown,
-    SIMLR
+    rmarkdown
 VignetteBuilder: knitr
 biocViews: SingleCell, Network, Clustering, RNASeq, Classification

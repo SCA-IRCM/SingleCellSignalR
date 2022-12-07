@@ -4,7 +4,8 @@
 \name{markers_default}
 \alias{markers_default}
 \title{A list of cell types markers}
-\format{A data frame with 95 rows of 15 variables:
+\format{
+A data frame with 95 rows of 15 variables:
 \describe{
   \item{TNBC}{Triple Negative Breast Cancer markers}
   \item{HER+}{HER+ Breast Cancer markers}
@@ -22,7 +23,8 @@
   \item{NK cells}{Natural Killer cells markers}
   \item{Treg}{Regulatory T-cells markers}
   ...
-}}
+}
+}
 \source{
 \url{EDF R\&D}
 }

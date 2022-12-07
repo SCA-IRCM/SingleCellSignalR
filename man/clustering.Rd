@@ -8,7 +8,7 @@ clustering(
   data,
   n.cluster = 0,
   n = 10,
-  method = c("simlr", "kmeans"),
+  method = c("kmeans", "simlr"),
   plot = TRUE,
   pdf = TRUE,
   write = TRUE
@@ -61,6 +61,10 @@ cluster vector assigning each cell of `data` to a cluster. The second one is
 called "tsne-Y-X.txt", containing the coordinates of each cell in the 2D
 t-SNE projection. "X" is the `method` argument anf "Y" is the retained number
 of clusters.
+
+Note that SIMLR might no longer be available in the most recent versions of R.
+It is thus necessary to load the library by yourself before calling this function
+if you want to use it (with \code{library(SIMLR)}).
 }
 \examples{
 data=matrix(runif(100000,0,1),nrow=500,ncol=200)
