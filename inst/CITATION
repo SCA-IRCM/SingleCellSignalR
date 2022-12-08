@@ -1,0 +1,11 @@
+## NAR paper 2020
+bibentry(bibtype = "Article",
+         title = "SingleCellSignalR: inference of intercellular networks from single-cell transcriptomics",
+         author = c(person(c("Simon"), "Cabello-Aguilar"),
+                    person(c("Melissa"), "Alame"), 
+                    person(c("Fabien"), "Kon-Sun-Tack"),
+                    person(c("Caroline"), "Fau"),
+                    person(c("Matthieu"), "Lacroix"),
+                    person(c("Jacques"), "Colinge")),
+         year = "2020", journal = "Nucleic Acids Res", volume = "48", number = "10",
+         pages = "e55", doi = "10.1093/nar/gkaa183")
